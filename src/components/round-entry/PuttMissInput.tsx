@@ -71,7 +71,7 @@ export function PuttMissInput({ missX, missY, onChange }: PuttMissInputProps) {
       <Text style={styles.label}>
         Miss: {missX === 0 && missY === 0
           ? "In cup"
-          : `${Math.abs(missX)}ft ${missX < 0 ? "L" : "R"}, ${Math.abs(missY)}ft ${missY < 0 ? "Short" : "Long"}`}
+          : `${(Math.round(Math.abs(missX) * 2) / 2).toFixed(1)}ft ${missX < 0 ? "L" : "R"}, ${(Math.round(Math.abs(missY) * 2) / 2).toFixed(1)}ft ${missY < 0 ? "Short" : "Long"}`}
       </Text>
       <GestureDetector gesture={composed}>
         <View>

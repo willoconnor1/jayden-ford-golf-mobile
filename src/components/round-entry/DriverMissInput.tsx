@@ -27,7 +27,7 @@ export function DriverMissInput({ missX, onChange }: DriverMissInputProps) {
   const dotX = useSharedValue(CENTER_X + missX * pxPerYard);
 
   const updateFromPx = (px: number) => {
-    const yards = Math.round(((px - CENTER_X) / pxPerYard) * 10) / 10;
+    const yards = Math.round((px - CENTER_X) / pxPerYard);
     const clamped = Math.max(-maxRange, Math.min(maxRange, yards));
     onChange(clamped);
   };
@@ -61,7 +61,7 @@ export function DriverMissInput({ missX, onChange }: DriverMissInputProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.label}>
-        Miss: {missX === 0 ? "Center" : `${Math.abs(missX)}y ${missX < 0 ? "Left" : "Right"}`}
+        Miss: {missX === 0 ? "Center" : `${Math.round(Math.abs(missX))}y ${missX < 0 ? "Left" : "Right"}`}
       </Text>
       <GestureDetector gesture={composed}>
         <View>
