@@ -145,20 +145,15 @@ function generateShotsForHole(
   rand: () => number,
 ): ShotData[] {
   const { par, distance, score, fairwayHit, greenInRegulation, putts,
-    penaltyStrokes, sandSaveAttempt, upAndDownAttempt } = hole;
+    penaltyStrokes, sandSaveAttempt } = hole;
 
-  // How many non-putt swing objects we need
-  const nonPuttStrokes = score - putts;
-  // Penalty strokes add to score but are NOT separate shot objects —
-  // the penalty is attached to the shot that caused it. However the
-  // re-hit IS a separate shot. So if OB: shot1(OB) + shot2(re-hit) = 2 shots,
-  // plus 1 penalty = 3 strokes. actualSwings = nonPuttStrokes - penaltyStrokes would
-  // give us the wrong count for OB (where re-hit is from same spot).
-  // Actually: score = shots.length + putts + penaltyStrokes is wrong.
-  // Real model: score = shots.length + putts (penalty is just a cost on one shot).
-  // No — if you hit OB, you re-tee: drive(OB) + penalty + re-drive(fairway) + approach + 2 putts = 6.
-  // That's 3 shots + 2 putts + 1 penalty = 6. So shots.length = score - putts - penaltyStrokes.
-  const numShots = Math.max(1, nonPuttStrokes - penaltyStrokes);
+  // shots.length = score - putts - penaltyStrokes
+  // (penalty adds to score but isn't a separate shot object)
+  const numShots = Math.max(1, score - putts - penaltyStrokes);
+
+  // Identify which shot index is the "missed green" shot for non-GIR holes.
+  // The LAST shot always reaches the green. The second-to-last misses if !GIR.
+  const missGreenIdx = (!greenInRegulation && numShots >= 2) ? numShots - 2 : -1;
 
   const shots: ShotData[] = [];
   let remaining = distance;
@@ -168,14 +163,20 @@ function generateShotsForHole(
   for (let i = 0; i < numShots; i++) {
     const isFirst = i === 0;
     const isLast = i === numShots - 1;
+    const isMissGreenShot = i === missGreenIdx;
 
     // Determine intent
-    let intent: ShotIntent = "green";
+    // Leave intent undefined for chip shots near the green (non-GIR last shot)
+    // so SG categorizes them as "aroundTheGreen" via distance fallback
+    let intent: ShotIntent | undefined = "green";
     if (par === 5 && i === 1 && remaining > 240 && !isLast) {
       intent = "lay-up";
     }
     if (currentLie === "penalty-area" || currentLie === "abnormal") {
       intent = "recovery";
+    }
+    if (isLast && !greenInRegulation && numShots >= 2) {
+      intent = undefined; // chip/pitch — let SG use distance-based categorization
     }
 
     // Select club
@@ -207,7 +208,6 @@ function generateShotsForHole(
       result = rand() < 0.5 ? "out-of-bounds" : "penalty-area";
       penaltyDrop = true;
       penaltyUsed = true;
-      // After OB/penalty, remaining doesn't change much (re-hitting from similar spot)
       remaining = Math.max(remaining - 20, remaining * 0.9);
     } else if (isFirst && par >= 4) {
       // Tee shot result must match fairwayHit
@@ -216,25 +216,21 @@ function generateShotsForHole(
       } else {
         result = rand() < 0.65 ? "rough" : (rand() < 0.5 ? "sand" : "tree-trouble");
       }
-      // Advance: driver goes ~280y
       const advance = clubData.typical + (rand() - 0.5) * 30;
       remaining = Math.max(10, remaining - advance);
-    } else if (isLast && greenInRegulation) {
-      // Last shot hits green
-      result = "green";
+    } else if (isLast) {
+      // LAST shot always reaches the green (or holes out if 0 putts)
+      result = putts === 0 ? "holed" : "green";
       remaining = 0;
-    } else if (isLast && !greenInRegulation && upAndDownAttempt) {
-      // Missed green — result depends on sand save
+    } else if (isMissGreenShot) {
+      // This shot MISSES the green (sets up the chip for non-GIR holes)
       if (sandSaveAttempt) {
         result = "sand";
       } else {
         result = rand() < 0.7 ? "rough" : "sand";
       }
-      remaining = Math.max(0, Math.floor(rand() * 25 + 5)); // 5-30 yards out
-    } else if (isLast) {
-      // Chip to green (up and down situation)
-      result = "green";
-      remaining = 0;
+      // Leave the ball 5-30 yards from the green
+      remaining = Math.max(5, Math.floor(rand() * 25 + 5));
     } else {
       // Intermediate shot — advance toward hole
       const advance = Math.min(actualTarget, remaining - 30) + (rand() - 0.5) * 20;
@@ -251,7 +247,7 @@ function generateShotsForHole(
 
     shots.push({
       club,
-      targetDistance: Math.round(actualTarget),
+      targetDistance: Math.round(Math.max(1, actualTarget)),
       lie: currentLie,
       missX,
       missY,
