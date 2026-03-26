@@ -933,7 +933,7 @@ const roundDefs: RoundDef[] = [
     courseKey: "clearwater",
     date: "2026-02-08",
     scores: scores6,
-    notes: "NZ PGA Pro-Am round. Disaster on 13 — OB left, penalty drop, couldn't save it. Rest of the round was solid.",
+    notes: "Pro-Am round. Disaster on 13 — OB left, penalty drop, couldn't save it. Rest of the round was solid.",
     seed: 1006,
   },
   {
@@ -954,7 +954,7 @@ const roundDefs: RoundDef[] = [
     courseKey: "royalQueensland",
     date: "2026-03-08",
     scores: scores9,
-    notes: "Australasian Tour qualifier. Kept it in play, just couldn't convert enough birdie putts.",
+    notes: "Tour qualifier. Kept it in play, just couldn't convert enough birdie putts.",
     seed: 1009,
   },
   {
