@@ -71,7 +71,7 @@ export const useRoundStore = create<RoundStore>()(
     }),
     {
       name: "golf-rounds-storage",
-      version: 3,
+      version: 4,
       storage: createJSONStorage(() => AsyncStorage),
       migrate: (persisted: unknown, version: number) => {
         const state = persisted as RoundStore;
@@ -92,6 +92,11 @@ export const useRoundStore = create<RoundStore>()(
               })),
             })),
           }));
+        }
+        if (version < 4 && state.rounds) {
+          // Re-seed: old seed data lacks shot tracking and puttMisses
+          state.rounds = state.rounds.filter((r) => !r.id.startsWith("seed-round-"));
+          state.seeded = false;
         }
         return state;
       },
