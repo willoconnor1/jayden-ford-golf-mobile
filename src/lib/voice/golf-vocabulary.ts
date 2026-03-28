@@ -185,9 +185,11 @@ export function resolvePuttSlope(input: string): PuttSlope | undefined {
 }
 
 const PUTT_MISS_DIRECTION_SYNONYMS: Record<string, PuttMissDirection> = {
-  "left": "left", "pulled it": "left",
-  "right": "right", "pushed it": "right",
+  "left": "left", "pulled it": "left", "pulled": "left",
+  "right": "right", "pushed it": "right", "pushed": "right",
   "good line": "good-line", "good-line": "good-line", "on line": "good-line",
+  "high side": "good-line", "high": "good-line", "pro side": "good-line",
+  "low side": "good-line", "low": "good-line", "amateur side": "good-line",
 };
 
 export function resolvePuttMissDirection(input: string): PuttMissDirection | undefined {
@@ -196,7 +198,9 @@ export function resolvePuttMissDirection(input: string): PuttMissDirection | und
 
 const PUTT_SPEED_SYNONYMS: Record<string, PuttSpeed> = {
   "short": "short", "came up short": "short", "left it short": "short", "not enough": "short",
+  "died": "short", "never got there": "short",
   "too firm": "too-firm", "too hard": "too-firm", "too fast": "too-firm", "blew it by": "too-firm",
+  "long": "too-firm", "past": "too-firm", "by": "too-firm", "blew by": "too-firm",
   "good speed": "good-speed", "good pace": "good-speed", "right speed": "good-speed",
 };
 

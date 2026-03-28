@@ -41,10 +41,13 @@ export function parsePuttSpeech(transcript: string): ParsedPuttResult {
   }
 
   // Break: "[left to right] break", "break [left to right]", "breaks [left/right]"
+  // Also standalone: "left to right", "right to left", "straight"
   const breakPatterns = [
     /([\w\s-]+?)\s*break/i,
     /break\s*([\w\s-]+?)(?:\s*[,.]|\s+(?:i|and|it)\b|$)/i,
     /breaks\s*(left|right)/i,
+    // Standalone: "left to right", "right to left" (abbreviated input)
+    /\b(left\s+to\s+right|right\s+to\s+left)\b/i,
   ];
   for (const p of breakPatterns) {
     const m = text.match(p);
@@ -55,6 +58,10 @@ export function parsePuttSpeech(transcript: string): ParsedPuttResult {
         if (resolved) { result.puttBreak = resolved; break; }
       }
     }
+  }
+  // Check for "straight" as break (only if no break found yet and "straight" appears early)
+  if (!result.puttBreak && /\bstraight\b/i.test(text)) {
+    result.puttBreak = "straight";
   }
 
   // Slope: "uphill" / "downhill" / "flat" / "up hill" / "down hill"
@@ -72,14 +79,14 @@ export function parsePuttSpeech(transcript: string): ParsedPuttResult {
     result.made = false;
   }
 
-  // If missed, get direction and speed
+  // If missed, get direction, speed, and miss distance
   if (result.made === false) {
-    // Miss direction: "missed [it] [left/right]", "pulled", "pushed", etc.
+    // Miss direction: "missed [it] [left/right]", "pulled", "pushed", "high side", etc.
     const missDirPatterns = [
       /(?:missed\s+(?:it\s+)?)(left|right)/i,
       /(?:missed\s+(?:it\s+)?(?:to\s+the\s+)?)(left|right)/i,
       /\b(pulled|pushed)\b/i,
-      /(?:missed\s+(?:it\s+)?)(good line|on line)/i,
+      /(?:missed\s+(?:it\s+)?)(good line|on line|high side|low side|high|low)/i,
     ];
     for (const p of missDirPatterns) {
       const m = text.match(p);
@@ -100,11 +107,33 @@ export function parsePuttSpeech(transcript: string): ParsedPuttResult {
         break;
       }
     }
-    // Check bare "short" only after "missed"/"miss" to avoid conflict with distance
+    // Check bare "short" or "long" only after "missed"/"miss" to avoid conflict with distance
     if (!result.speed) {
       const afterMiss = text.split(/missed|miss/).pop() || "";
       if (/\bshort\b/.test(afterMiss)) {
         result.speed = "short";
+      } else if (/\blong\b/.test(afterMiss)) {
+        result.speed = "too-firm";
+      }
+    }
+
+    // Numeric putt miss: "3 feet left", "2 feet long", or bare "3 left", "2 long"
+    const puttMisses = [...text.matchAll(/(\d+)\s*(?:feet|ft|foot)?\s*(left|right|long|short)\b/gi)];
+    for (const match of puttMisses) {
+      const dist = parseInt(match[1], 10);
+      const dir = match[2].toLowerCase();
+      if (dist > 0 && dist <= 20) {
+        if (dir === "left" || dir === "right") {
+          result.missX = dir === "left" ? -dist : dist;
+          if (!result.missDirection) {
+            result.missDirection = dir as PuttMissDirection;
+          }
+        } else {
+          result.missY = dir === "short" ? -dist : dist;
+          if (!result.speed) {
+            result.speed = dir === "short" ? "short" : "too-firm";
+          }
+        }
       }
     }
   }

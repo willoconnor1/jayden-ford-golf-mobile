@@ -11,21 +11,19 @@ export function VoicePromptCard({ template }: VoicePromptCardProps) {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>{template.title}</Text>
-      <View style={styles.scriptContainer}>
-        <Text style={styles.scriptText}>
-          {template.promptParts.map((part, i) =>
-            part.isSlot ? (
-              <Text key={i} style={styles.slot}>
-                {part.example || "___"}
-              </Text>
-            ) : (
-              <Text key={i}>{part.text}</Text>
-            )
-          )}
-        </Text>
+      <View style={styles.checklist}>
+        {template.checklistItems.map((item, i) => (
+          <View
+            key={i}
+            style={[styles.checklistRow, item.optional && styles.optional]}
+          >
+            <Text style={styles.label}>{item.label}:</Text>
+            <Text style={styles.example}>{item.example}</Text>
+          </View>
+        ))}
       </View>
       <Text style={styles.hint}>
-        Tap the mic and read the script, filling in the highlighted parts
+        Tap the mic and say your data — any order works
       </Text>
     </View>
   );
@@ -38,7 +36,7 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   title: {
     fontSize: fontSize.sm,
@@ -47,20 +45,29 @@ const styles = StyleSheet.create({
     textTransform: "uppercase",
     letterSpacing: 0.5,
   },
-  scriptContainer: {
-    backgroundColor: colors.background,
-    borderRadius: radius.md,
-    padding: spacing.md,
+  checklist: {
+    gap: spacing.sm,
   },
-  scriptText: {
-    fontSize: fontSize.lg,
-    color: colors.text,
-    lineHeight: 28,
+  checklistRow: {
+    flexDirection: "row",
+    alignItems: "baseline",
+    gap: spacing.sm,
   },
-  slot: {
-    color: colors.primary,
-    fontWeight: "700",
+  optional: {
+    opacity: 0.5,
+  },
+  label: {
+    fontSize: fontSize.sm,
+    fontWeight: "500",
+    color: colors.textSecondary,
+    minWidth: 100,
+  },
+  example: {
+    fontSize: fontSize.sm,
+    fontWeight: "600",
     fontStyle: "italic",
+    color: colors.primary,
+    flexShrink: 1,
   },
   hint: {
     fontSize: fontSize.xs,

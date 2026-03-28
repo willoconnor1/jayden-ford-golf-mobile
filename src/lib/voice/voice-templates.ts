@@ -6,16 +6,19 @@ export type TemplateType =
   | "putt"
   | "penalty-drop";
 
+export interface ChecklistItem {
+  /** Short label shown in the checklist */
+  label: string;
+  /** Example of what to say */
+  example: string;
+  /** Whether this item is optional (dimmed in UI) */
+  optional?: boolean;
+}
+
 export interface VoiceTemplate {
   type: TemplateType;
   title: string;
-  promptParts: PromptPart[];
-}
-
-export interface PromptPart {
-  text: string;
-  isSlot: boolean;
-  example?: string;
+  checklistItems: ChecklistItem[];
 }
 
 // ── Template definitions ───────────────────────────────────────
@@ -23,114 +26,64 @@ export interface PromptPart {
 const TEE_PAR45: VoiceTemplate = {
   type: "tee-par45",
   title: "Tee Shot",
-  promptParts: [
-    { text: "Hole ", isSlot: false },
-    { text: "number", isSlot: true, example: "one" },
-    { text: " is a ", isSlot: false },
-    { text: "hole shape", isSlot: true, example: "dogleg left" },
-    { text: " hole. I hit ", isSlot: false },
-    { text: "club", isSlot: true, example: "driver" },
-    { text: " and it went into the ", isSlot: false },
-    { text: "result", isSlot: true, example: "left rough" },
-    { text: ", about ", isSlot: false },
-    { text: "miss distance", isSlot: true, example: "20" },
-    { text: " yards ", isSlot: false },
-    { text: "miss direction", isSlot: true, example: "left" },
-    { text: " of my target. I ended up ", isSlot: false },
-    { text: "distance remaining", isSlot: true, example: "150" },
-    { text: " yards away.", isSlot: false },
+  checklistItems: [
+    { label: "Shape", example: "dogleg left", optional: true },
+    { label: "Club", example: "driver" },
+    { label: "Result", example: "left rough" },
+    { label: "Miss", example: "20 yards left", optional: true },
+    { label: "Distance left", example: "150 away" },
   ],
 };
 
 const TEE_PAR3: VoiceTemplate = {
   type: "tee-par3",
   title: "Tee Shot (Par 3)",
-  promptParts: [
-    { text: "I hit ", isSlot: false },
-    { text: "club", isSlot: true, example: "7 iron" },
-    { text: " and it went ", isSlot: false },
-    { text: "result", isSlot: true, example: "on the green" },
-    { text: ", about ", isSlot: false },
-    { text: "miss distance", isSlot: true, example: "10" },
-    { text: " feet ", isSlot: false },
-    { text: "miss direction", isSlot: true, example: "left" },
-    { text: " and ", isSlot: false },
-    { text: "miss distance Y", isSlot: true, example: "5" },
-    { text: " feet ", isSlot: false },
-    { text: "long or short", isSlot: true, example: "long" },
-    { text: " of the pin.", isSlot: false },
+  checklistItems: [
+    { label: "Club", example: "7 iron" },
+    { label: "Result", example: "on the green" },
+    { label: "Miss", example: "10 feet left, 5 feet long", optional: true },
   ],
 };
 
 const APPROACH: VoiceTemplate = {
   type: "approach",
   title: "Approach Shot",
-  promptParts: [
-    { text: "From ", isSlot: false },
-    { text: "distance", isSlot: true, example: "150" },
-    { text: " yards I hit ", isSlot: false },
-    { text: "club", isSlot: true, example: "8 iron" },
-    { text: " and it went ", isSlot: false },
-    { text: "result", isSlot: true, example: "on the green" },
-    { text: ", about ", isSlot: false },
-    { text: "miss distance", isSlot: true, example: "10" },
-    { text: " feet ", isSlot: false },
-    { text: "miss direction", isSlot: true, example: "left" },
-    { text: " and ", isSlot: false },
-    { text: "miss distance Y", isSlot: true, example: "5" },
-    { text: " feet ", isSlot: false },
-    { text: "long or short", isSlot: true, example: "long" },
-    { text: ".", isSlot: false },
+  checklistItems: [
+    { label: "Club", example: "8 iron" },
+    { label: "Result", example: "green" },
+    { label: "Miss", example: "10 feet left, 5 feet long", optional: true },
+    { label: "Distance left", example: "8 feet away", optional: true },
   ],
 };
 
 const CHIP: VoiceTemplate = {
   type: "chip",
   title: "Short Game",
-  promptParts: [
-    { text: "From ", isSlot: false },
-    { text: "distance", isSlot: true, example: "30" },
-    { text: " yards in the ", isSlot: false },
-    { text: "lie", isSlot: true, example: "rough" },
-    { text: " I hit ", isSlot: false },
-    { text: "club", isSlot: true, example: "SW" },
-    { text: " onto the ", isSlot: false },
-    { text: "result", isSlot: true, example: "green" },
-    { text: ", ", isSlot: false },
-    { text: "distance remaining", isSlot: true, example: "8" },
-    { text: " feet from the hole.", isSlot: false },
+  checklistItems: [
+    { label: "Lie", example: "rough", optional: true },
+    { label: "Club", example: "sand wedge" },
+    { label: "Result", example: "on the green" },
+    { label: "Distance left", example: "6 feet" },
   ],
 };
 
 const PUTT: VoiceTemplate = {
   type: "putt",
   title: "Putt",
-  promptParts: [
-    { text: "From ", isSlot: false },
-    { text: "distance", isSlot: true, example: "10" },
-    { text: " feet, ", isSlot: false },
-    { text: "break", isSlot: true, example: "left to right" },
-    { text: " break, ", isSlot: false },
-    { text: "slope", isSlot: true, example: "uphill" },
-    { text: ". I ", isSlot: false },
-    { text: "made or missed", isSlot: true, example: "missed" },
-    { text: " it ", isSlot: false },
-    { text: "miss direction", isSlot: true, example: "right" },
-    { text: ", ", isSlot: false },
-    { text: "speed", isSlot: true, example: "short" },
-    { text: ".", isSlot: false },
+  checklistItems: [
+    { label: "Break", example: "left to right", optional: true },
+    { label: "Slope", example: "uphill", optional: true },
+    { label: "Result", example: "made it  /  missed right" },
+    { label: "Speed", example: "short", optional: true },
   ],
 };
 
 const PENALTY_DROP: VoiceTemplate = {
   type: "penalty-drop",
   title: "Penalty Drop",
-  promptParts: [
-    { text: "I took a drop. I'm now ", isSlot: false },
-    { text: "distance remaining", isSlot: true, example: "140" },
-    { text: " yards away in the ", isSlot: false },
-    { text: "lie", isSlot: true, example: "rough" },
-    { text: ".", isSlot: false },
+  checklistItems: [
+    { label: "Distance left", example: "140 away" },
+    { label: "Lie", example: "rough" },
   ],
 };
 

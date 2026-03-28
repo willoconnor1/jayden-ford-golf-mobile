@@ -72,16 +72,38 @@ function extractResult(text: string): ReturnType<typeof resolveResult> {
   return scanForResult(text);
 }
 
+/** Extract direction from qualified result phrases like "left rough", "right bunker". */
+function extractResultDirection(text: string, shot: Partial<ShotData>): void {
+  if (shot.direction && shot.direction.length > 0) return; // already set
+  const m = text.match(/\b(left|right)\s+(?:rough|bunker|sand|trees|fairway)\b/i);
+  if (m) {
+    const dir = m[1].toLowerCase() as "left" | "right";
+    shot.direction = [dir];
+  }
+}
+
 /** Extract a yards distance by role — "from" (target) vs "remaining" (away). */
 function extractDistanceYards(text: string, role: "from" | "remaining"): number | undefined {
   if (role === "from") {
-    const m = text.match(/(?:from\s+)([\w\s]+?)\s*(?:yards?|yds?)/i);
-    if (m) return parseSpokenNumber(m[1].trim());
+    // "from 150 yards", "from 150"
+    const patterns = [
+      /(?:from\s+)([\w\s]+?)\s*(?:yards?|yds?)/i,
+      /(?:from\s+)(\d{2,3})(?:\s|,|$)/i,
+    ];
+    for (const p of patterns) {
+      const m = text.match(p);
+      if (m) {
+        const dist = parseSpokenNumber(m[1].trim());
+        if (dist !== undefined && dist > 0) return dist;
+      }
+    }
   }
   if (role === "remaining") {
     const patterns = [
       /([\w\s]+?)\s*(?:yards?|yds?)\s*(?:away|out|remaining|left|to\s+go)/i,
       /(?:ended\s+up|i'm|im|i\s+am|i\s+have|have|got)\s+([\w\s]+?)\s*(?:yards?|yds?)/i,
+      // Bare number: "150 away", "150 out", "150 remaining"
+      /\b(\d{2,3})\s*(?:away|out|remaining|to\s+go)\b/i,
     ];
     for (const p of patterns) {
       const m = text.match(p);
@@ -96,13 +118,22 @@ function extractDistanceYards(text: string, role: "from" | "remaining"): number 
 
 /** Extract miss in yards with direction (tee shots). */
 function extractMissYards(text: string, shot: Partial<ShotData>): void {
-  const m = text.match(/(?:about\s+|around\s+|roughly\s+|maybe\s+)?([\w\s]+?)\s*(?:yards?|yds?)\s*(left|right)(?:\s+of)?/i);
-  if (m) {
-    const yards = parseSpokenNumber(m[1].trim());
-    const dir = m[2].toLowerCase() as "left" | "right";
-    if (yards !== undefined) {
-      shot.missX = dir === "left" ? -(yards * 3) : (yards * 3);
-      shot.direction = [dir];
+  const patterns = [
+    // "20 yards left", "about 20 yards right of my target"
+    /(?:about\s+|around\s+|roughly\s+|maybe\s+)?([\w\s]+?)\s*(?:yards?|yds?)\s*(left|right)(?:\s+of)?/i,
+    // Bare: "20 left", "20 right" (no "yards")
+    /\b(\d{1,3})\s*(left|right)\b/i,
+  ];
+  for (const p of patterns) {
+    const m = text.match(p);
+    if (m) {
+      const yards = parseSpokenNumber(m[1].trim());
+      const dir = m[2].toLowerCase() as "left" | "right";
+      if (yards !== undefined && yards > 0) {
+        shot.missX = dir === "left" ? -(yards * 3) : (yards * 3);
+        shot.direction = [dir];
+        return;
+      }
     }
   }
 }
@@ -110,8 +141,9 @@ function extractMissYards(text: string, shot: Partial<ShotData>): void {
 /** Extract miss in feet with direction (approach/par 3). */
 function extractMissFeet(text: string, shot: Partial<ShotData>): void {
   const directions: ShotDirection[] = [];
-  const misses = [...text.matchAll(/([\w\s]+?)\s*(?:feet|ft|foot)\s*(left|right|long|short)/gi)];
-  for (const match of misses) {
+  // "10 feet left", "5 ft long"
+  const missesWithUnit = [...text.matchAll(/([\w\s]+?)\s*(?:feet|ft|foot)\s*(left|right|long|short)/gi)];
+  for (const match of missesWithUnit) {
     const dist = parseSpokenNumber(match[1].trim());
     const dir = match[2].toLowerCase() as ShotDirection;
     if (dist !== undefined) {
@@ -124,13 +156,43 @@ function extractMissFeet(text: string, shot: Partial<ShotData>): void {
       }
     }
   }
+  // Bare: "10 left", "5 long" (no "feet")
+  if (directions.length === 0) {
+    const bareMisses = [...text.matchAll(/\b(\d{1,2})\s*(left|right|long|short)\b/gi)];
+    for (const match of bareMisses) {
+      const dist = parseInt(match[1], 10);
+      const dir = match[2].toLowerCase() as ShotDirection;
+      if (dist > 0 && dist <= 50) {
+        if (dir === "left" || dir === "right") {
+          shot.missX = dir === "left" ? -dist : dist;
+          directions.push(dir);
+        } else {
+          shot.missY = dir === "short" ? -dist : dist;
+          directions.push(dir);
+        }
+      }
+    }
+  }
   if (directions.length > 0) shot.direction = directions;
 }
 
-/** Extract "N feet from the hole/pin". */
+/** Extract "N feet from the hole/pin", "to N feet", or bare "N feet". */
 function extractDistanceFromHole(text: string): number | undefined {
-  const m = text.match(/([\w\s]+?)\s*(?:feet|ft|foot)\s*(?:from\s+(?:the\s+)?(?:hole|pin|cup)|away)/i);
-  if (m) return parseSpokenNumber(m[1].trim());
+  const patterns = [
+    // "8 feet from the hole/pin/cup", "8 feet away"
+    /([\w\s]+?)\s*(?:feet|ft|foot)\s*(?:from\s+(?:the\s+)?(?:hole|pin|cup)|away)/i,
+    // "to 8 feet", "hit it to 8 feet"
+    /(?:to\s+)([\w\s]+?)\s*(?:feet|ft|foot)/i,
+    // Bare "8 feet" at end of text (last resort for chip context)
+    /\b(\d{1,2})\s*(?:feet|ft|foot)\s*$/i,
+  ];
+  for (const p of patterns) {
+    const m = text.match(p);
+    if (m) {
+      const dist = parseSpokenNumber(m[1].trim());
+      if (dist !== undefined && dist > 0) return dist;
+    }
+  }
   return undefined;
 }
 
@@ -151,6 +213,8 @@ function parseTeePar45(text: string): ParsedShotResult {
   const holeShape = extractHoleShape(text);
   shot.club = extractClub(text);
   shot.result = extractResult(text);
+  // Extract direction from qualified result: "left rough" → direction=left
+  extractResultDirection(text, shot);
   extractMissYards(text, shot);
   shot.distanceRemaining = extractDistanceYards(text, "remaining");
   return { shot, holeShape };
