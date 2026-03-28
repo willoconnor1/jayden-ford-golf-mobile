@@ -11,6 +11,7 @@ const MODES: { value: EntryMode; title: string; subtitle: string }[] = [
   { value: "simple", title: "Simple", subtitle: "Score, fairway, GIR, putts per hole" },
   { value: "standard", title: "Standard", subtitle: "Shot-by-shot with quick pills" },
   { value: "detailed", title: "Detailed", subtitle: "Shot-by-shot + visual miss trackers" },
+  { value: "voice", title: "Voice (Beta)", subtitle: "Speak your stats shot-by-shot" },
 ];
 
 export function EntryModeSelector({ value, onChange }: EntryModeSelectorProps) {

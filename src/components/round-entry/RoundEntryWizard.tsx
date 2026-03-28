@@ -19,6 +19,7 @@ import { toast } from "@/components/ui/Toast";
 import { EntryModeSelector } from "./EntryModeSelector";
 import { HoleEntryCard } from "./HoleEntryCard";
 import { ShotFlowWizard } from "./ShotFlowWizard";
+import { VoiceShotFlowWrapper } from "@/components/voice/VoiceShotFlowWrapper";
 import { useRoundStore } from "@/stores/round-store";
 import { HoleData, CourseInfo, Round, EntryMode } from "@/lib/types";
 import { DEFAULT_HOLE_PARS } from "@/lib/constants";
@@ -286,11 +287,23 @@ export function RoundEntryWizard() {
         )}
 
         {/* Step 1: Shot Flow (Standard/Detailed) */}
-        {isShotFlowStep && (
+        {isShotFlowStep && entryMode !== "voice" && (
           <ShotFlowWizard
             holePars={course.holePars}
             holeDistances={course.holeDistances}
             entryMode={entryMode}
+            onComplete={(flowHoles) => {
+              setHoles(flowHoles);
+              setStep(summaryStep);
+            }}
+          />
+        )}
+
+        {/* Step 1: Voice Shot Flow */}
+        {isShotFlowStep && entryMode === "voice" && (
+          <VoiceShotFlowWrapper
+            holePars={course.holePars}
+            holeDistances={course.holeDistances}
             onComplete={(flowHoles) => {
               setHoles(flowHoles);
               setStep(summaryStep);

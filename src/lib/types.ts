@@ -152,7 +152,7 @@ export type MeasurementSystem = "imperial" | "metric";
 
 // ── Entry Modes ─────────────────────────────────────────────────
 
-export type EntryMode = "simple" | "standard" | "detailed";
+export type EntryMode = "simple" | "standard" | "detailed" | "voice";
 export type HoleShape = "straight" | "dogleg-left" | "dogleg-right";
 export type ShotDirection = "left" | "right" | "short" | "long";
 export type ShotIntent = "green" | "lay-up" | "recovery";
