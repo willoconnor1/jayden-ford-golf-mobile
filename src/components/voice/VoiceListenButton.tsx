@@ -10,19 +10,20 @@ import type { VoiceState } from "@/hooks/use-voice-recognition";
 
 interface VoiceListenButtonProps {
   state: VoiceState;
-  interimTranscript: string;
   transcript: string;
   error: string | null;
   onPress: () => void;
 }
 
 export function VoiceListenButton({
-  state, interimTranscript, transcript, error, onPress,
+  state, transcript, error, onPress,
 }: VoiceListenButtonProps) {
   const pulseScale = useSharedValue(1);
 
+  const isRecording = state === "recording";
+
   useEffect(() => {
-    if (state === "listening") {
+    if (isRecording) {
       pulseScale.value = withRepeat(
         withSequence(
           withTiming(1.15, { duration: 600 }),
@@ -41,30 +42,25 @@ export function VoiceListenButton({
     transform: [{ scale: pulseScale.value }],
   }));
 
-  const isListening = state === "listening";
   const isProcessing = state === "processing";
   const isError = state === "error";
 
   return (
     <View style={styles.container}>
-      {/* Transcript display */}
-      {(interimTranscript || transcript) && (
+      {/* Transcript display — shown after AI processing */}
+      {transcript ? (
         <View style={styles.transcriptContainer}>
-          <Text style={styles.transcriptLabel}>
-            {isListening ? "Hearing..." : "Heard:"}
-          </Text>
-          <Text style={styles.transcriptText}>
-            {transcript || interimTranscript}
-          </Text>
+          <Text style={styles.transcriptLabel}>Heard:</Text>
+          <Text style={styles.transcriptText}>{transcript}</Text>
         </View>
-      )}
+      ) : null}
 
       {/* Mic button */}
       <Animated.View style={pulseStyle}>
         <Pressable
           style={[
             styles.micButton,
-            isListening && styles.micButtonActive,
+            isRecording && styles.micButtonActive,
             isProcessing && styles.micButtonProcessing,
             isError && styles.micButtonError,
           ]}
@@ -75,7 +71,7 @@ export function VoiceListenButton({
             <ActivityIndicator color={colors.white} size="small" />
           ) : (
             <Text style={styles.micIcon}>
-              {isListening ? "⏹" : "🎤"}
+              {isRecording ? "⏹" : "🎤"}
             </Text>
           )}
         </Pressable>
@@ -85,7 +81,7 @@ export function VoiceListenButton({
       <Text style={[styles.stateLabel, isError && styles.stateLabelError]}>
         {isError
           ? error
-          : isListening
+          : isRecording
             ? "Tap to stop"
             : isProcessing
               ? "Processing..."
