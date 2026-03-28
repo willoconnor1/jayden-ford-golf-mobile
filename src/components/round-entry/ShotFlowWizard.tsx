@@ -7,6 +7,7 @@ import { ShotStepCard } from "./ShotStepCard";
 import { PuttStepCard, PuttData } from "./PuttStepCard";
 import { HoleSummaryCard } from "./HoleSummaryCard";
 import { deriveHoleData, resultToNextLie } from "./derive-hole-data";
+import { getClubForDistance } from "@/lib/constants-clubs";
 
 type Phase = "shot" | "putt" | "summary";
 
@@ -17,8 +18,8 @@ interface ShotFlowWizardProps {
   onComplete: (holes: HoleData[]) => void;
 }
 
-function defaultShot(lie: ShotData["lie"] = "tee", club: ShotData["club"] = "driver"): ShotData {
-  return { club, targetDistance: 0, lie, missX: 0, missY: 0 };
+function defaultShot(lie: ShotData["lie"] = "tee", club: ShotData["club"] = "driver", targetDistance = 0): ShotData {
+  return { club, targetDistance, lie, missX: 0, missY: 0 };
 }
 
 function defaultPutt(): PuttData {
@@ -103,8 +104,13 @@ export function ShotFlowWizard({
 
     const nextLie = resultToNextLie(currentShot.result);
     const isTeeRehit = currentShot.result === "out-of-bounds";
-    const nextClub = isTeeRehit ? currentShot.club : ("7-iron" as ShotData["club"]);
-    setShots((prev) => [...prev, defaultShot(nextLie, nextClub)]);
+    const nextDistance = currentShot.distanceRemaining || 0;
+    const nextClub = isTeeRehit
+      ? currentShot.club
+      : nextDistance > 0
+        ? getClubForDistance(nextDistance)
+        : ("7-iron" as ShotData["club"]);
+    setShots((prev) => [...prev, defaultShot(nextLie, nextClub, nextDistance)]);
   };
 
   // ── Putt handlers ──

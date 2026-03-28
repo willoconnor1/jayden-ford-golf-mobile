@@ -1,13 +1,16 @@
-import type { Round, Goal } from "@/lib/types";
-
-const API_BASE = __DEV__
-  ? "http://localhost:3000/api"
-  : "https://your-production-url.com/api";
+import type { Round, Goal, SavedCourse } from "@/lib/types";
+import { API_BASE } from "@/lib/api-config";
+import { useAuthStore } from "@/stores/auth-store";
 
 async function api(path: string, init?: RequestInit) {
+  const token = useAuthStore.getState().token;
   const res = await fetch(`${API_BASE}${path}`, {
     ...init,
-    headers: { "Content-Type": "application/json", ...init?.headers },
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...init?.headers,
+    },
   });
   if (!res.ok) throw new Error(`API ${init?.method ?? "GET"} ${path}: ${res.status}`);
   return res.json();
@@ -53,11 +56,20 @@ export function syncDeleteGoal(id: string) {
   );
 }
 
+// ── Course sync ──────────────────────────────────────────────────
+
+export function syncSaveCourse(course: SavedCourse) {
+  api("/courses", { method: "POST", body: JSON.stringify(course) }).catch((e) =>
+    console.warn("Background sync (save course) failed:", e)
+  );
+}
+
 // ── Full sync ─────────────────────────────────────────────────────
 
 export async function pullFromDb(): Promise<{
   rounds: Round[];
   goals: Goal[];
+  courses: SavedCourse[];
 } | null> {
   try {
     return await api("/sync");
@@ -67,11 +79,15 @@ export async function pullFromDb(): Promise<{
   }
 }
 
-export async function pushToDb(rounds: Round[], goals: Goal[]) {
+export async function pushToDb(
+  rounds: Round[],
+  goals: Goal[],
+  courses?: SavedCourse[]
+) {
   try {
     await api("/sync", {
       method: "POST",
-      body: JSON.stringify({ rounds, goals }),
+      body: JSON.stringify({ rounds, goals, courses }),
     });
   } catch (e) {
     console.warn("Push to DB failed:", e);

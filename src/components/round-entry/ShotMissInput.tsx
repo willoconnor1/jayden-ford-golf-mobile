@@ -126,7 +126,7 @@ export function ShotMissInput({ missX, missY, onChange }: ShotMissInputProps) {
               cx={CENTER + displayX * pxPerUnit}
               cy={CENTER - displayY * pxPerUnit}
               r={10}
-              fill="#15803d"
+              fill="rgba(74, 222, 128, 0.5)"
             />
           </Svg>
         </View>

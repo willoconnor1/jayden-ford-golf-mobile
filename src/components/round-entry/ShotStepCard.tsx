@@ -69,6 +69,9 @@ export function ShotStepCard({
         {!isTeeShot && (
           <Text style={styles.lieText}> · {shot.lie.replace("-", " ")}</Text>
         )}
+        {!isTeeShot && shot.targetDistance > 0 && (
+          <Text style={styles.distanceText}> · {shot.targetDistance} yds to pin</Text>
+        )}
       </Text>
 
       {/* Hole Shape — tee shots on par 4/5 */}
@@ -200,6 +203,7 @@ const styles = StyleSheet.create({
   container: { gap: 16 },
   label: { fontSize: 12, fontWeight: "500", color: "#6b7280" },
   lieText: { textTransform: "capitalize" },
+  distanceText: { fontWeight: "600", color: "#059669" },
   fieldLabel: { fontSize: 12, fontWeight: "500", color: "#6b7280", marginBottom: 6 },
   clubButton: {
     flexDirection: "row",

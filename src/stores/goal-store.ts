@@ -17,6 +17,7 @@ interface GoalStore {
   deleteGoal: (id: string) => void;
   completeGoal: (id: string) => void;
   clearSeedData: () => void;
+  reset: () => void;
 }
 
 export const useGoalStore = create<GoalStore>()(
@@ -56,6 +57,7 @@ export const useGoalStore = create<GoalStore>()(
         set((state) => ({
           goals: state.goals.filter((g) => !g.id.startsWith("seed-goal-")),
         })),
+      reset: () => set({ goals: [], seeded: true }),
     }),
     {
       name: "golf-goals-storage",

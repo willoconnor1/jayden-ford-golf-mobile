@@ -35,6 +35,7 @@ interface RoundStore {
   deleteRound: (id: string) => void;
   getRound: (id: string) => Round | undefined;
   clearSeedData: () => void;
+  reset: () => void;
 }
 
 export const useRoundStore = create<RoundStore>()(
@@ -68,6 +69,7 @@ export const useRoundStore = create<RoundStore>()(
         set((state) => ({
           rounds: state.rounds.filter((r) => !r.id.startsWith("seed-round-")),
         })),
+      reset: () => set({ rounds: [], seeded: true }),
     }),
     {
       name: "golf-rounds-storage",

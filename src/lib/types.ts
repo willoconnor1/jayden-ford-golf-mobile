@@ -35,6 +35,7 @@ export interface CourseInfo {
   totalPar: number;
   holePars: number[];
   holeDistances: number[];
+  measurementSystem?: MeasurementSystem;
 }
 
 export interface Round {
@@ -145,6 +146,10 @@ export interface Drill {
   targetStat: string;
 }
 
+// ── Measurement System ──────────────────────────────────────────
+
+export type MeasurementSystem = "imperial" | "metric";
+
 // ── Entry Modes ─────────────────────────────────────────────────
 
 export type EntryMode = "simple" | "standard" | "detailed";
@@ -206,4 +211,89 @@ export interface PracticeFocus {
   recommendation: string;
   suggestedDrills: Drill[];
   practiceTimeAllocation: number;
+}
+
+// ── Course Library ──────────────────────────────────────────────
+
+export interface CourseTeeData {
+  name: string;            // "Blue", "White", "Championship", etc.
+  rating: number;
+  slope: number;
+  totalPar: number;
+  totalDistance: number;    // total yardage
+  holePars: number[];      // 18-element array
+  holeDistances: number[]; // 18-element array (yards)
+}
+
+export interface SavedCourse {
+  id: string;
+  externalId?: string;
+  apiSource?: string;       // "golfcourseapi" | "manual"
+  name: string;
+  clubName?: string;
+  city?: string;
+  state?: string;
+  country?: string;
+  latitude?: number;
+  longitude?: number;
+  numberOfHoles: number;
+  tees: CourseTeeData[];
+  createdAt: string;
+  updatedAt: string;
+  lastFetchedAt?: string;
+  isFavorite: boolean;
+}
+
+// ── Live Events ─────────────────────────────────────────────────
+
+export type LiveEventStatus = "lobby" | "active" | "completed";
+
+export interface LiveEvent {
+  id: string;
+  name: string;
+  courseName: string;
+  joinCode: string;
+  holePars: number[];
+  status: LiveEventStatus;
+  createdAt: string;
+}
+
+export interface LivePlayer {
+  id: string;
+  eventId: string;
+  name: string;
+  groupNumber: number | null;
+  createdAt: string;
+}
+
+export interface LiveScore {
+  id: string;
+  eventId: string;
+  playerId: string;
+  holeNumber: number;
+  strokes: number;
+  createdAt: string;
+}
+
+export interface LeaderboardEntry {
+  playerId: string;
+  playerName: string;
+  rank: number;
+  scoreToPar: number;
+  thru: number;
+  totalStrokes: number;
+  groupNumber: number | null;
+}
+
+export interface LiveEventData {
+  event: LiveEvent;
+  players: LivePlayer[];
+  scores: LiveScore[];
+}
+
+export interface LiveSession {
+  eventId: string;
+  playerId: string | null;
+  isOrganizer: boolean;
+  organizerSecret: string | null;
 }

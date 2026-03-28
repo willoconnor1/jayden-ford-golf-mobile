@@ -133,3 +133,31 @@ export const PUTT_BREAKS: { value: PuttBreak; label: string }[] = [
   { value: "right-to-left", label: "R-to-L" },
   { value: "multiple", label: "Multiple" },
 ];
+
+// ── Default club distance ranges (yards) for auto-suggestion ────
+// Ordered from longest to shortest so the first match wins.
+
+const CLUB_RANGES: { club: Club; min: number; max: number }[] = [
+  { club: "3-wood",   min: 256, max: 999 },
+  { club: "5-wood",   min: 241, max: 255 },
+  { club: "3-hybrid", min: 226, max: 240 },
+  { club: "4-hybrid", min: 213, max: 225 },
+  { club: "5-iron",   min: 200, max: 212 },
+  { club: "6-iron",   min: 188, max: 199 },
+  { club: "7-iron",   min: 176, max: 187 },
+  { club: "8-iron",   min: 160, max: 175 },
+  { club: "9-iron",   min: 146, max: 159 },
+  { club: "pw",       min: 138, max: 145 },
+  { club: "gw",       min: 121, max: 137 },
+  { club: "sw",       min: 101, max: 120 },
+  { club: "lw",       min: 0,   max: 100 },
+];
+
+/** Return the best club for a given yardage based on default ranges. */
+export function getClubForDistance(yards: number): Club {
+  if (yards <= 0) return "lw";
+  for (const range of CLUB_RANGES) {
+    if (yards >= range.min && yards <= range.max) return range.club;
+  }
+  return "3-wood";
+}
