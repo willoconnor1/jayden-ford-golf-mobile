@@ -197,7 +197,7 @@ export interface ShotData {
   missY: number;                   // feet — negative = short, positive = long
   result?: ShotResult;             // where ball ended up
   penaltyDrop?: boolean;           // took a penalty drop
-  direction?: ShotDirection;       // left / right / short / long
+  direction?: ShotDirection[];     // left / right / short / long (multi-select)
   intent?: ShotIntent;             // green / lay-up / recovery
   distanceRemaining?: number;      // yards remaining after shot
 }

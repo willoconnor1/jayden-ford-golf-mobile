@@ -25,6 +25,7 @@ export function DriverMissInput({ missX, onChange }: DriverMissInputProps) {
   const pxPerYard = (SVG_WIDTH / 2) / maxRange;
 
   const dotX = useSharedValue(CENTER_X + missX * pxPerYard);
+  const startX = useSharedValue(0);
 
   const updateFromPx = (px: number) => {
     const yards = Math.round((px - CENTER_X) / pxPerYard);
@@ -33,8 +34,11 @@ export function DriverMissInput({ missX, onChange }: DriverMissInputProps) {
   };
 
   const pan = Gesture.Pan()
+    .onStart(() => {
+      startX.value = dotX.value;
+    })
     .onUpdate((e) => {
-      const newX = Math.max(8, Math.min(SVG_WIDTH - 8, e.x));
+      const newX = Math.max(8, Math.min(SVG_WIDTH - 8, startX.value + e.translationX));
       dotX.value = newX;
       runOnJS(updateFromPx)(newX);
     })

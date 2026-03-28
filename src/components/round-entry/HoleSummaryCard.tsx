@@ -55,13 +55,13 @@ export function HoleSummaryCard({ hole, isLastHole, onNext, onBack }: HoleSummar
           <StatBox
             label="Fairway"
             value={hole.fairwayHit === "yes" ? "Hit" : "Missed"}
-            color={hole.fairwayHit === "yes" ? "#6BA3D6" : "#ef4444"}
+            color={hole.fairwayHit === "yes" ? "#22c55e" : "#ef4444"}
           />
         )}
         <StatBox
           label="GIR"
           value={hole.greenInRegulation ? "Yes" : "No"}
-          color={hole.greenInRegulation ? "#6BA3D6" : "#ef4444"}
+          color={hole.greenInRegulation ? "#22c55e" : "#ef4444"}
         />
         <StatBox label="Putts" value={String(hole.putts)} />
         {hole.penaltyStrokes > 0 && (
@@ -71,7 +71,7 @@ export function HoleSummaryCard({ hole, isLastHole, onNext, onBack }: HoleSummar
           <StatBox
             label="Up & Down"
             value={hole.upAndDownConverted ? "Yes" : "No"}
-            color={hole.upAndDownConverted ? "#6BA3D6" : "#ef4444"}
+            color={hole.upAndDownConverted ? "#22c55e" : "#ef4444"}
           />
         )}
       </View>
@@ -80,12 +80,19 @@ export function HoleSummaryCard({ hole, isLastHole, onNext, onBack }: HoleSummar
       {hole.shots && hole.shots.length > 0 && (
         <View style={styles.shotsSection}>
           <Text style={styles.sectionLabel}>Shots</Text>
-          {hole.shots.map((s, i) => (
-            <Text key={i} style={styles.shotLine}>
-              {i + 1}. {s.club.replace("-", " ")}
-              {s.result ? ` → ${s.result.replace("-", " ")}` : ""}
-            </Text>
-          ))}
+          {hole.shots.map((s, i) => {
+            const isGoodResult = s.result === "fairway" || s.result === "green" || s.result === "holed";
+            return (
+              <Text key={i} style={styles.shotLine}>
+                {i + 1}. {s.club.replace("-", " ")}
+                {s.result && (
+                  <Text style={{ fontWeight: "600", color: isGoodResult ? "#22c55e" : "#f87171" }}>
+                    {" → "}{s.result.replace("-", " ")}
+                  </Text>
+                )}
+              </Text>
+            );
+          })}
           <Text style={styles.shotLine}>
             {hole.putts} putt{hole.putts !== 1 ? "s" : ""}
           </Text>

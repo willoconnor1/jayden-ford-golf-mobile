@@ -38,6 +38,8 @@ export function ShotMissInput({ missX, missY, onChange }: ShotMissInputProps) {
 
   const dotX = useSharedValue(CENTER + displayX * pxPerUnit);
   const dotY = useSharedValue(CENTER - displayY * pxPerUnit);
+  const startX = useSharedValue(0);
+  const startY = useSharedValue(0);
 
   const updateFromPx = (px: number, py: number) => {
     // Snap to whole units (yards or feet)
@@ -52,9 +54,13 @@ export function ShotMissInput({ missX, missY, onChange }: ShotMissInputProps) {
   };
 
   const pan = Gesture.Pan()
+    .onStart(() => {
+      startX.value = dotX.value;
+      startY.value = dotY.value;
+    })
     .onUpdate((e) => {
-      const nx = Math.max(8, Math.min(SIZE - 8, e.x));
-      const ny = Math.max(8, Math.min(SIZE - 8, e.y));
+      const nx = Math.max(8, Math.min(SIZE - 8, startX.value + e.translationX));
+      const ny = Math.max(8, Math.min(SIZE - 8, startY.value + e.translationY));
       dotX.value = nx;
       dotY.value = ny;
       runOnJS(updateFromPx)(nx, ny);

@@ -19,7 +19,7 @@ interface ShotFlowWizardProps {
 }
 
 function defaultShot(lie: ShotData["lie"] = "tee", club: ShotData["club"] = "driver", targetDistance = 0): ShotData {
-  return { club, targetDistance, lie, missX: 0, missY: 0 };
+  return { club, targetDistance, lie, intent: "green", missX: 0, missY: 0 };
 }
 
 function defaultPutt(): PuttData {

@@ -125,7 +125,11 @@ export function PuttStepCard({
             value={putt.speed}
             onChange={(v) => update({ speed: v as PuttSpeed | undefined })}
             columns={3}
-            activeColor="#2563eb"
+            activeColorMap={{
+              "good-speed": "rgba(34,197,94,0.75)",
+              "short": "#f87171",
+              "too-firm": "#f87171",
+            }}
             allowDeselect
           />
           {isDetailed && (
@@ -163,9 +167,9 @@ const styles = StyleSheet.create({
     flex: 1, paddingVertical: 14, borderRadius: 10, borderWidth: 2,
     borderColor: "#d1d5db", alignItems: "center",
   },
-  madeActive: { backgroundColor: "#6BA3D6", borderColor: "#6BA3D6" },
+  madeActive: { backgroundColor: "rgba(74, 222, 128, 0.5)", borderColor: "rgba(74, 222, 128, 0.5)" },
   madeText: { fontSize: 14, fontWeight: "600", color: "#6b7280" },
-  madeTextActive: { color: "#ffffff" },
+  madeTextActive: { color: "#6b7280" },
   missedButton: {
     flex: 1, paddingVertical: 14, borderRadius: 10, borderWidth: 2,
     borderColor: "#d1d5db", alignItems: "center",

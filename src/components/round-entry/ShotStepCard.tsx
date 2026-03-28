@@ -142,7 +142,11 @@ export function ShotStepCard({
           value={shot.intent}
           onChange={(v) => update({ intent: v as ShotIntent })}
           columns={3}
-          activeColor="#7c3aed"
+          activeColorMap={{
+            "green": "rgba(34,197,94,0.75)",
+            "lay-up": "#eab308",
+            "recovery": "#f97316",
+          }}
         />
       )}
 
@@ -153,7 +157,17 @@ export function ShotStepCard({
         value={shot.result}
         onChange={(v) => update({ result: v as ShotResult })}
         columns={3}
-        activeColor="#6BA3D6"
+        activeColorMap={{
+          "fairway": "rgba(34,197,94,0.75)",
+          "green": "rgba(34,197,94,0.75)",
+          "holed": "#22c55e",
+          "rough": "#f87171",
+          "sand": "#f87171",
+          "penalty-area": "#ef4444",
+          "out-of-bounds": "#ef4444",
+          "tree-trouble": "#f87171",
+          "abnormal": "#f87171",
+        }}
       />
 
       {/* Miss Direction */}
@@ -162,7 +176,8 @@ export function ShotStepCard({
           label="Miss Direction"
           options={SHOT_DIRECTIONS}
           value={shot.direction}
-          onChange={(v) => update({ direction: v as ShotDirection })}
+          onChange={(v) => update({ direction: v as ShotDirection[] | undefined })}
+          multiSelect
           columns={4}
           activeColor="#2563eb"
         />

@@ -26,6 +26,8 @@ export function PuttMissInput({ missX, missY, onChange }: PuttMissInputProps) {
 
   const dotX = useSharedValue(CENTER + missX * pxPerFoot);
   const dotY = useSharedValue(CENTER - missY * pxPerFoot);
+  const startX = useSharedValue(0);
+  const startY = useSharedValue(0);
 
   const updateFromPx = (px: number, py: number) => {
     // Snap to 0.5 ft
@@ -37,9 +39,13 @@ export function PuttMissInput({ missX, missY, onChange }: PuttMissInputProps) {
   };
 
   const pan = Gesture.Pan()
+    .onStart(() => {
+      startX.value = dotX.value;
+      startY.value = dotY.value;
+    })
     .onUpdate((e) => {
-      const nx = Math.max(8, Math.min(SIZE - 8, e.x));
-      const ny = Math.max(8, Math.min(SIZE - 8, e.y));
+      const nx = Math.max(8, Math.min(SIZE - 8, startX.value + e.translationX));
+      const ny = Math.max(8, Math.min(SIZE - 8, startY.value + e.translationY));
       dotX.value = nx;
       dotY.value = ny;
       runOnJS(updateFromPx)(nx, ny);

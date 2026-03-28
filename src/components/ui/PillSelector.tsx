@@ -8,12 +8,14 @@ interface PillOption<T extends string> {
 
 interface PillSelectorProps<T extends string> {
   options: PillOption<T>[];
-  value: T | undefined;
-  onChange: (value: T | undefined) => void;
+  value: T | T[] | undefined;
+  onChange: (value: T | T[] | undefined) => void;
   columns?: number;
   activeColor?: string;
+  activeColorMap?: Partial<Record<T, string>>;
   label?: string;
   allowDeselect?: boolean;
+  multiSelect?: boolean;
   style?: ViewStyle;
 }
 
@@ -23,41 +25,61 @@ export function PillSelector<T extends string>({
   onChange,
   columns = 3,
   activeColor = "#6BA3D6",
+  activeColorMap,
   label,
-  allowDeselect = false,
+  allowDeselect = true,
+  multiSelect = false,
   style,
 }: PillSelectorProps<T>) {
+  const isActive = (opt: T) =>
+    multiSelect
+      ? Array.isArray(value) && value.includes(opt)
+      : value === opt;
+
+  const handlePress = (opt: T) => {
+    hapticLight();
+    if (multiSelect) {
+      const current = Array.isArray(value) ? value : [];
+      if (current.includes(opt)) {
+        const next = current.filter((v) => v !== opt);
+        onChange(next.length > 0 ? next : undefined);
+      } else {
+        onChange([...current, opt]);
+      }
+    } else {
+      if (isActive(opt) && allowDeselect) {
+        onChange(undefined);
+      } else {
+        onChange(opt);
+      }
+    }
+  };
+
   return (
     <View style={style}>
       {label && <Text style={styles.label}>{label}</Text>}
       <View style={[styles.grid, { gap: 6 }]}>
         {options.map((opt) => {
-          const isActive = value === opt.value;
+          const active = isActive(opt.value);
+          const optColor = activeColorMap?.[opt.value] ?? activeColor;
           return (
             <Pressable
               key={opt.value}
-              onPress={() => {
-                hapticLight();
-                if (isActive && allowDeselect) {
-                  onChange(undefined);
-                } else {
-                  onChange(opt.value);
-                }
-              }}
+              onPress={() => handlePress(opt.value)}
               style={[
                 styles.pill,
                 {
                   width: `${(100 / columns) - 2}%` as unknown as number,
                   flexBasis: `${(100 / columns) - 2}%` as unknown as number,
-                  backgroundColor: isActive ? activeColor : "#ffffff",
-                  borderColor: isActive ? activeColor : "#d1d5db",
+                  backgroundColor: active ? optColor : "#ffffff",
+                  borderColor: active ? optColor : "#d1d5db",
                 },
               ]}
             >
               <Text
                 style={[
                   styles.pillText,
-                  { color: isActive ? "#ffffff" : "#6b7280" },
+                  { color: active ? "#ffffff" : "#6b7280" },
                 ]}
                 numberOfLines={1}
               >

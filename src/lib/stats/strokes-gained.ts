@@ -41,6 +41,35 @@ function resultToLieType(result: ShotResult | undefined): LieType {
   }
 }
 
+// ── Infer missing hole distance ─────────────────────────────────
+
+const PAR_DEFAULT_DISTANCE: Record<number, number> = {
+  3: 170,
+  4: 400,
+  5: 520,
+  6: 640,
+};
+
+/**
+ * When hole.distance is 0 (e.g. mobile app didn't populate distances),
+ * try to estimate from shot data first, then fall back to par-based defaults.
+ */
+function inferHoleDistance(hole: HoleData): number {
+  if (hole.distance > 0) return hole.distance;
+
+  // Try to estimate from tee shot data: targetDistance + distanceRemaining
+  if (hole.shots && hole.shots.length > 0) {
+    const teeShot = hole.shots[0];
+    const target = teeShot.targetDistance ?? 0;
+    const remaining = teeShot.distanceRemaining ?? 0;
+    if (target > 0 && remaining > 0) {
+      return target + remaining;
+    }
+  }
+
+  return PAR_DEFAULT_DISTANCE[hole.par] ?? 400;
+}
+
 // ── Shot categorization ─────────────────────────────────────────
 
 function categorizeShotSG(
@@ -88,6 +117,7 @@ function estimateDistanceAfterShot(
 
 function calculateShotLevelSG(hole: HoleData): StrokesGainedDetail {
   const shots = hole.shots!;
+  const holeDistance = inferHoleDistance(hole);
   const puttDistances = hole.puttDistances ?? [];
   const shotSGResults: ShotStrokesGained[] = [];
 
@@ -104,11 +134,11 @@ function calculateShotLevelSG(hole: HoleData): StrokesGainedDetail {
     // Expected strokes BEFORE this shot
     let expectedBefore: number;
     if (i === 0) {
-      expectedBefore = getExpectedStrokes("tee", hole.distance);
+      expectedBefore = getExpectedStrokes("tee", holeDistance);
     } else {
       const lieType = shotLieToLieType(shot.lie);
       const prevShot = shots[i - 1];
-      const distFromPrev = estimateDistanceAfterShot(prevShot, hole.distance, i - 1);
+      const distFromPrev = estimateDistanceAfterShot(prevShot, holeDistance, i - 1);
       expectedBefore = getExpectedStrokes(lieType, distFromPrev);
     }
 
@@ -128,12 +158,12 @@ function calculateShotLevelSG(hole: HoleData): StrokesGainedDetail {
       // Penalty area: 1 penalty stroke + drop
       penaltyStrokes = 1;
       const nextLie = resultToLieType(shot.result);
-      const distAfter = estimateDistanceAfterShot(shot, hole.distance, i);
+      const distAfter = estimateDistanceAfterShot(shot, holeDistance, i);
       expectedAfter = getExpectedStrokes(nextLie, distAfter);
     } else {
       // Normal result
       const nextLie = resultToLieType(shot.result);
-      const distAfter = estimateDistanceAfterShot(shot, hole.distance, i);
+      const distAfter = estimateDistanceAfterShot(shot, holeDistance, i);
       expectedAfter = getExpectedStrokes(nextLie, distAfter);
     }
 
@@ -198,18 +228,18 @@ function calculateShotLevelSG(hole: HoleData): StrokesGainedDetail {
 
 // ── Hole-level estimation (Simple mode) ─────────────────────────
 
-function estimateDriveDistance(hole: HoleData): number {
-  if (hole.par === 4) return Math.min(hole.distance * 0.65, 310);
-  if (hole.par === 5) return Math.min(hole.distance * 0.52, 310);
+function estimateDriveDistance(par: number, distance: number): number {
+  if (par === 4) return Math.min(distance * 0.65, 310);
+  if (par === 5) return Math.min(distance * 0.52, 310);
   return 0;
 }
 
-function estimateApproachDistance(hole: HoleData): number {
-  if (hole.par === 3) return hole.distance;
-  if (hole.par === 4) return Math.max(hole.distance - estimateDriveDistance(hole), 10);
-  if (hole.par === 5) {
+function estimateApproachDistance(par: number, distance: number): number {
+  if (par === 3) return distance;
+  if (par === 4) return Math.max(distance - estimateDriveDistance(par, distance), 10);
+  if (par === 5) {
     // Smarter par 5 estimate: remaining after drive, minus a layup proportional to distance
-    const afterDrive = hole.distance - estimateDriveDistance(hole);
+    const afterDrive = distance - estimateDriveDistance(par, distance);
     const layupDist = Math.min(afterDrive * 0.6, 220);
     return Math.max(afterDrive - layupDist, 30);
   }
@@ -217,7 +247,8 @@ function estimateApproachDistance(hole: HoleData): number {
 }
 
 function calculateHoleStrokesGainedSimple(hole: HoleData): StrokesGainedDetail {
-  const expectedFromTee = getExpectedStrokes("tee", hole.distance);
+  const holeDistance = inferHoleDistance(hole);
+  const expectedFromTee = getExpectedStrokes("tee", holeDistance);
   const sgTotal = expectedFromTee - hole.score;
   const firstPuttDist = hole.puttDistances?.[0] || 20;
 
@@ -240,8 +271,8 @@ function calculateHoleStrokesGainedSimple(hole: HoleData): StrokesGainedDetail {
   // SG: Off the Tee (par 4+ only)
   let sgOffTheTee = 0;
   if (hole.par >= 4) {
-    const driveDistance = estimateDriveDistance(hole);
-    const remainingDistance = Math.max(hole.distance - driveDistance, 10);
+    const driveDistance = estimateDriveDistance(hole.par, holeDistance);
+    const remainingDistance = Math.max(holeDistance - driveDistance, 10);
 
     // Use sand lie when sandSaveAttempt indicates bunker trouble
     let approachLie: LieType;
@@ -260,7 +291,7 @@ function calculateHoleStrokesGainedSimple(hole: HoleData): StrokesGainedDetail {
   // SG: Approach — calculate ALWAYS, not only when GIR
   let sgApproach = 0;
   {
-    const approachStartDistance = estimateApproachDistance(hole);
+    const approachStartDistance = estimateApproachDistance(hole.par, holeDistance);
     const approachLie: LieType = hole.par === 3
       ? "tee"
       : hole.fairwayHit === "yes"
