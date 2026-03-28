@@ -16,51 +16,70 @@ async function api(path: string, init?: RequestInit) {
   return res.json();
 }
 
+/** Fire-and-forget with one retry after 2s on failure */
+function fireAndForget(fn: () => Promise<unknown>, label: string) {
+  fn().catch((e) => {
+    console.warn(`Background sync (${label}) failed, retrying in 2s:`, e);
+    setTimeout(() => {
+      fn().catch((e2) =>
+        console.warn(`Background sync (${label}) retry failed:`, e2)
+      );
+    }, 2000);
+  });
+}
+
 // ── Round sync ────────────────────────────────────────────────────
 
 export function syncAddRound(round: Round) {
-  api("/rounds", { method: "POST", body: JSON.stringify(round) }).catch((e) =>
-    console.warn("Background sync (add round) failed:", e)
+  fireAndForget(
+    () => api("/rounds", { method: "POST", body: JSON.stringify(round) }),
+    "add round"
   );
 }
 
 export function syncUpdateRound(round: Round) {
-  api(`/rounds/${round.id}`, { method: "PUT", body: JSON.stringify(round) }).catch((e) =>
-    console.warn("Background sync (update round) failed:", e)
+  fireAndForget(
+    () => api(`/rounds/${round.id}`, { method: "PUT", body: JSON.stringify(round) }),
+    "update round"
   );
 }
 
 export function syncDeleteRound(id: string) {
-  api(`/rounds/${id}`, { method: "DELETE" }).catch((e) =>
-    console.warn("Background sync (delete round) failed:", e)
+  fireAndForget(
+    () => api(`/rounds/${id}`, { method: "DELETE" }),
+    "delete round"
   );
 }
 
 // ── Goal sync ─────────────────────────────────────────────────────
 
 export function syncAddGoal(goal: Goal) {
-  api("/goals", { method: "POST", body: JSON.stringify(goal) }).catch((e) =>
-    console.warn("Background sync (add goal) failed:", e)
+  fireAndForget(
+    () => api("/goals", { method: "POST", body: JSON.stringify(goal) }),
+    "add goal"
   );
 }
 
 export function syncUpdateGoal(goal: Goal) {
-  api(`/goals/${goal.id}`, { method: "PUT", body: JSON.stringify(goal) }).catch((e) =>
-    console.warn("Background sync (update goal) failed:", e)
+  fireAndForget(
+    () => api(`/goals/${goal.id}`, { method: "PUT", body: JSON.stringify(goal) }),
+    "update goal"
   );
 }
 
 export function syncDeleteGoal(id: string) {
-  api(`/goals/${id}`, { method: "DELETE" }).catch((e) =>
-    console.warn("Background sync (delete goal) failed:", e)
+  fireAndForget(
+    () => api(`/goals/${id}`, { method: "DELETE" }),
+    "delete goal"
   );
 }
 
 // ── Course sync ──────────────────────────────────────────────────
 
 export function syncSaveCourse(course: SavedCourse) {
-  api("/courses", { method: "POST", body: JSON.stringify(course) }).catch((e) =>
-    console.warn("Background sync (save course) failed:", e)
+  fireAndForget(
+    () => api("/courses", { method: "POST", body: JSON.stringify(course) }),
+    "save course"
   );
 }
 

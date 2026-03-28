@@ -1,9 +1,11 @@
 import React from "react";
 import { Tabs } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
+import { SyncProvider } from "@/components/SyncProvider";
 
 export default function TabLayout() {
   return (
+    <SyncProvider>
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: "#6BA3D6",
@@ -63,5 +65,6 @@ export default function TabLayout() {
         }}
       />
     </Tabs>
+    </SyncProvider>
   );
 }

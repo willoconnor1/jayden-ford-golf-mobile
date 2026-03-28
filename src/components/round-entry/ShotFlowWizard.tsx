@@ -143,7 +143,9 @@ export function ShotFlowWizard({
       return;
     }
 
-    setPutts((prev) => [...prev, defaultPutt()]);
+    // Auto-populate distance from miss position
+    const missDistFt = Math.round(Math.sqrt(currentPutt.missX ** 2 + currentPutt.missY ** 2) * 2) / 2;
+    setPutts((prev) => [...prev, { ...defaultPutt(), distance: missDistFt || 0 }]);
   };
 
   // ── Next hole / finish ──
