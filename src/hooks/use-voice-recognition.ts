@@ -1,94 +1,110 @@
 import { useState, useCallback, useRef } from "react";
 import {
-  ExpoSpeechRecognitionModule,
-  useSpeechRecognitionEvent,
-} from "expo-speech-recognition";
-import { startListening, stopListening } from "@/lib/voice/speech-recognizer";
+  startRecording,
+  stopRecording,
+  cancelRecording,
+} from "@/lib/voice/audio-recorder";
+import { API_BASE } from "@/lib/api-config";
+import { useAuthStore } from "@/stores/auth-store";
+import type { TemplateType } from "@/lib/voice/voice-templates";
 
-export type VoiceState = "idle" | "listening" | "processing" | "error";
+export type VoiceState = "idle" | "recording" | "processing" | "error";
+
+interface VoiceContext {
+  templateType: TemplateType;
+  phase: "shot" | "putt";
+}
 
 interface UseVoiceRecognitionReturn {
   state: VoiceState;
   transcript: string;
-  interimTranscript: string;
+  parsedData: Record<string, unknown> | null;
   error: string | null;
   start: () => Promise<void>;
-  stop: () => void;
+  stop: () => Promise<void>;
   reset: () => void;
 }
 
-export function useVoiceRecognition(): UseVoiceRecognitionReturn {
+export function useVoiceRecognition(
+  context: VoiceContext
+): UseVoiceRecognitionReturn {
   const [state, setState] = useState<VoiceState>("idle");
   const [transcript, setTranscript] = useState("");
-  const [interimTranscript, setInterimTranscript] = useState("");
+  const [parsedData, setParsedData] = useState<Record<string, unknown> | null>(
+    null
+  );
   const [error, setError] = useState<string | null>(null);
-  const transcriptRef = useRef("");
-
-  useSpeechRecognitionEvent("start", () => {
-    setState("listening");
-  });
-
-  useSpeechRecognitionEvent("result", (event) => {
-    const results = event.results;
-    if (!results || results.length === 0) return;
-
-    const latest = results[results.length - 1];
-    const text = latest.transcript;
-
-    if (event.isFinal) {
-      // Accumulate final results
-      transcriptRef.current = transcriptRef.current
-        ? `${transcriptRef.current} ${text}`
-        : text;
-      setTranscript(transcriptRef.current);
-      setInterimTranscript("");
-    } else {
-      setInterimTranscript(text);
-    }
-  });
-
-  useSpeechRecognitionEvent("end", () => {
-    // If we have interim text that wasn't finalized, treat it as final
-    if (interimTranscript && !transcriptRef.current) {
-      transcriptRef.current = interimTranscript;
-      setTranscript(interimTranscript);
-      setInterimTranscript("");
-    }
-    setState(transcriptRef.current ? "processing" : "idle");
-  });
-
-  useSpeechRecognitionEvent("error", (event) => {
-    const message = event.error === "no-speech"
-      ? "No speech detected. Try again."
-      : `Speech error: ${event.error}`;
-    setError(message);
-    setState("error");
-  });
+  const contextRef = useRef(context);
+  contextRef.current = context;
 
   const start = useCallback(async () => {
     setError(null);
     setTranscript("");
-    setInterimTranscript("");
-    transcriptRef.current = "";
+    setParsedData(null);
+
     try {
-      await startListening();
-    } catch (e: any) {
-      setError(e.message || "Failed to start speech recognition");
+      await startRecording();
+      setState("recording");
+    } catch (err) {
+      setError(
+        err instanceof Error ? err.message : "Failed to start recording"
+      );
       setState("error");
     }
   }, []);
 
-  const stop = useCallback(() => {
-    stopListening();
+  const stop = useCallback(async () => {
+    try {
+      const fileUri = await stopRecording();
+      setState("processing");
+
+      // Build FormData with audio file
+      const formData = new FormData();
+      formData.append("audio", {
+        uri: fileUri,
+        type: "audio/m4a",
+        name: "recording.m4a",
+      } as unknown as Blob);
+      formData.append("templateType", contextRef.current.templateType);
+      formData.append("phase", contextRef.current.phase);
+
+      const token = useAuthStore.getState().token;
+      const res = await fetch(`${API_BASE}/voice/parse`, {
+        method: "POST",
+        body: formData,
+        headers: token ? { Authorization: `Bearer ${token}` } : {},
+      });
+
+      if (!res.ok) {
+        const body = await res.json().catch(() => ({}));
+        throw new Error(body.error || `API error ${res.status}`);
+      }
+
+      const { transcript: t, data } = await res.json();
+      setTranscript(t || "");
+      setParsedData(data && Object.keys(data).length > 0 ? data : null);
+      setState("idle");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Voice parsing failed");
+      setState("error");
+    }
   }, []);
 
   const reset = useCallback(() => {
+    cancelRecording();
     setState("idle");
     setTranscript("");
-    setInterimTranscript("");
+    setParsedData(null);
     setError(null);
-    transcriptRef.current = "";
   }, []);
 
-  return { state, transcript, interimTranscript, error, start, stop, reset };
+  return {
+    state,
+    transcript,
+    parsedData,
+    error,
+    start,
+    stop,
+    reset,
+  };
 }
