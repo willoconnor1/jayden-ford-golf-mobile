@@ -183,7 +183,7 @@ export function ShotStepCard({
         />
       )}
 
-      {/* Distance remaining */}
+      {/* Distance remaining — yards to green for non-green results */}
       {shot.result && shot.result !== "green" && shot.result !== "holed" && (
         <TextInput
           label="Distance Remaining (yds)"
@@ -191,6 +191,17 @@ export function ShotStepCard({
           onChangeText={(t) => update({ distanceRemaining: parseInt(t) || 0 })}
           keyboardType="number-pad"
           placeholder="150"
+        />
+      )}
+
+      {/* Distance to hole — feet, shown when result is green (carries to first putt) */}
+      {shot.result === "green" && (
+        <TextInput
+          label="Distance to Hole (ft)"
+          value={shot.distanceRemaining ? String(shot.distanceRemaining) : ""}
+          onChangeText={(t) => update({ distanceRemaining: parseInt(t) || 0 })}
+          keyboardType="number-pad"
+          placeholder="20"
         />
       )}
 

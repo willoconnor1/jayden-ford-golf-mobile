@@ -97,7 +97,8 @@ export function ShotFlowWizard({
     }
 
     if (currentShot.result === "green") {
-      setPutts([defaultPutt()]);
+      const puttDist = currentShot.distanceRemaining || 0;
+      setPutts([{ ...defaultPutt(), distance: puttDist }]);
       setPhase("putt");
       return;
     }
