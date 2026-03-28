@@ -65,19 +65,19 @@ export const PGA_TOUR_AVERAGES: Record<string, number> = {
 };
 
 export const CHART_COLORS = {
-  primary: "hsl(142, 71%, 35%)",     // green-700
-  secondary: "hsl(142, 71%, 45%)",   // green-600
-  accent: "hsl(45, 93%, 47%)",       // gold
-  scoring: "hsl(221, 83%, 53%)",     // blue
-  fairway: "hsl(142, 71%, 45%)",     // green
-  gir: "hsl(160, 84%, 39%)",         // emerald
-  putting: "hsl(270, 67%, 47%)",     // purple
-  sgPositive: "hsl(142, 71%, 45%)",  // green
-  sgNegative: "hsl(0, 84%, 60%)",    // red
-  sgOffTheTee: "hsl(221, 83%, 53%)", // blue
-  sgApproach: "hsl(25, 95%, 53%)",   // orange
+  primary: "hsl(213, 55%, 63%)",       // pastel blue
+  secondary: "hsl(213, 55%, 73%)",     // lighter blue
+  accent: "hsl(29, 87%, 67%)",         // pastel orange
+  scoring: "hsl(221, 83%, 53%)",       // blue
+  fairway: "hsl(213, 55%, 63%)",       // pastel blue
+  gir: "hsl(160, 84%, 39%)",           // emerald
+  putting: "hsl(270, 67%, 47%)",       // purple
+  sgPositive: "hsl(213, 55%, 63%)",    // pastel blue
+  sgNegative: "hsl(0, 84%, 60%)",      // red
+  sgOffTheTee: "hsl(221, 83%, 53%)",   // blue
+  sgApproach: "hsl(29, 87%, 67%)",     // pastel orange
   sgAroundGreen: "hsl(160, 84%, 39%)", // emerald
-  sgPutting: "hsl(270, 67%, 47%)",   // purple
+  sgPutting: "hsl(270, 67%, 47%)",     // purple
 };
 
 export function formatStat(value: number, category: StatCategory): string {

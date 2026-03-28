@@ -1,5 +1,11 @@
 import { DefaultTheme, ThemeProvider } from "@react-navigation/native";
-import { useFonts } from "expo-font";
+import {
+  useFonts,
+  Inter_400Regular,
+  Inter_500Medium,
+  Inter_600SemiBold,
+  Inter_700Bold,
+} from "@expo-google-fonts/inter";
 import { Stack } from "expo-router";
 import * as SplashScreen from "expo-splash-screen";
 import { useEffect } from "react";
@@ -17,11 +23,27 @@ export const unstable_settings = {
 
 SplashScreen.preventAutoHideAsync();
 
+// Set Inter as the default font for all Text components
+const originalRender = (Text as any).render;
+if (originalRender) {
+  (Text as any).render = function (props: any, ref: any) {
+    const fontMap: Record<string, string> = {
+      "700": "Inter_700Bold",
+      "bold": "Inter_700Bold",
+      "600": "Inter_600SemiBold",
+      "500": "Inter_500Medium",
+    };
+    const fw = props.style?.fontWeight ?? StyleSheet.flatten(props.style)?.fontWeight;
+    const fontFamily = fontMap[String(fw)] ?? "Inter_400Regular";
+    return originalRender.call(this, { ...props, style: [{ fontFamily }, props.style] }, ref);
+  };
+}
+
 const golfTheme = {
   ...DefaultTheme,
   colors: {
     ...DefaultTheme.colors,
-    primary: "#15803d",
+    primary: "#6BA3D6",
     background: "#ffffff",
     card: "#ffffff",
     text: "#111827",
@@ -31,7 +53,10 @@ const golfTheme = {
 
 export default function RootLayout() {
   const [loaded, error] = useFonts({
-    SpaceMono: require("../assets/fonts/SpaceMono-Regular.ttf"),
+    Inter_400Regular,
+    Inter_500Medium,
+    Inter_600SemiBold,
+    Inter_700Bold,
   });
 
   const user = useAuthStore((s) => s.user);
@@ -55,7 +80,7 @@ export default function RootLayout() {
   if (!loaded || isAuthLoading) {
     return (
       <View style={{ flex: 1, alignItems: "center", justifyContent: "center", backgroundColor: "#fff" }}>
-        <ActivityIndicator size="large" color="#15803d" />
+        <ActivityIndicator size="large" color="#6BA3D6" />
       </View>
     );
   }
@@ -105,6 +130,6 @@ const kbStyles = StyleSheet.create({
   btnText: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#15803d",
+    color: "#6BA3D6",
   },
 });

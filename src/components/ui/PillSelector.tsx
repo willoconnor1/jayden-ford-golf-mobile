@@ -22,7 +22,7 @@ export function PillSelector<T extends string>({
   value,
   onChange,
   columns = 3,
-  activeColor = "#15803d",
+  activeColor = "#6BA3D6",
   label,
   allowDeselect = false,
   style,

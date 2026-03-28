@@ -464,7 +464,7 @@ const styles = StyleSheet.create({
   content: { padding: 16, gap: 12, paddingBottom: 40 },
   progressRow: { flexDirection: "row", justifyContent: "space-between" },
   stepLabel: { fontSize: 13, color: "#6b7280", paddingVertical: 4 },
-  stepLabelActive: { color: "#15803d", fontWeight: "600" },
+  stepLabelActive: { color: "#6BA3D6", fontWeight: "600" },
   runningTotal: {
     backgroundColor: "#f9fafb",
     borderRadius: 10,
@@ -493,7 +493,7 @@ const styles = StyleSheet.create({
     flex: 1, alignItems: "center", paddingVertical: 4,
     borderRadius: 4, borderWidth: 1, borderColor: "#d1d5db",
   },
-  parButtonActive: { backgroundColor: "#15803d", borderColor: "#15803d" },
+  parButtonActive: { backgroundColor: "#6BA3D6", borderColor: "#6BA3D6" },
   parButtonText: { fontSize: 12, color: "#6b7280" },
   parButtonTextActive: { color: "#fff", fontWeight: "600" },
   summaryScore: { alignItems: "center", paddingVertical: 16 },

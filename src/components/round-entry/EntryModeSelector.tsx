@@ -57,10 +57,10 @@ const styles = StyleSheet.create({
     gap: 4,
   },
   cardActive: {
-    borderColor: "#15803d",
+    borderColor: "#6BA3D6",
     backgroundColor: "rgba(21,128,61,0.05)",
   },
   title: { fontSize: 14, fontWeight: "700", color: "#374151" },
-  titleActive: { color: "#15803d" },
+  titleActive: { color: "#6BA3D6" },
   subtitle: { fontSize: 10, color: "#6b7280", textAlign: "center", lineHeight: 13 },
 });

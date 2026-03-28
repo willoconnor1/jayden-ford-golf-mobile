@@ -14,7 +14,7 @@ interface ButtonProps {
 }
 
 const variantStyles: Record<Variant, { bg: string; bgPressed: string; text: string; border: string }> = {
-  primary: { bg: "#15803d", bgPressed: "#166534", text: "#ffffff", border: "#15803d" },
+  primary: { bg: "#6BA3D6", bgPressed: "#4A7FB5", text: "#ffffff", border: "#6BA3D6" },
   outline: { bg: "#ffffff", bgPressed: "#f3f4f6", text: "#374151", border: "#d1d5db" },
   ghost: { bg: "transparent", bgPressed: "#f3f4f6", text: "#374151", border: "transparent" },
   danger: { bg: "#dc2626", bgPressed: "#b91c1c", text: "#ffffff", border: "#dc2626" },

@@ -73,7 +73,7 @@ export default function StrokesGainedScreen() {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
         <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>⛳</Text>
+          <Text style={styles.emptyIcon}>—</Text>
           <Text style={styles.emptyTitle}>No Rounds Yet</Text>
           <Text style={styles.emptyText}>
             Log at least one round to see your strokes gained analysis.
@@ -179,7 +179,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#15803d",
+    backgroundColor: "#6BA3D6",
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 10,

@@ -87,9 +87,9 @@ function ScatterPlot({
           cx={cx + d.x * scale}
           cy={cy - d.y * scale}
           r={4.5}
-          fill="#15803d"
+          fill="#6BA3D6"
           fillOpacity={0.6}
-          stroke="#15803d"
+          stroke="#6BA3D6"
           strokeWidth={0.5}
         />
       ))}
@@ -129,7 +129,7 @@ export default function DispersionScreen() {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
         <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>🎯</Text>
+          <Text style={styles.emptyIcon}>—</Text>
           <Text style={styles.emptyTitle}>No shot data yet</Text>
           <Text style={styles.emptyText}>
             When entering a round, expand the "More" section on each hole and
@@ -248,7 +248,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e5e7eb",
   },
-  filterPillActive: { backgroundColor: "#15803d", borderColor: "#15803d" },
+  filterPillActive: { backgroundColor: "#6BA3D6", borderColor: "#6BA3D6" },
   filterPillText: { fontSize: 12, fontWeight: "500", color: "#6b7280" },
   filterPillTextActive: { color: "#ffffff" },
   // Plot

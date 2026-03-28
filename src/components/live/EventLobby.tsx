@@ -188,7 +188,7 @@ const styles = StyleSheet.create({
   codeValue: {
     fontSize: 32,
     fontWeight: "800",
-    color: "#15803d",
+    color: "#6BA3D6",
     fontFamily: "monospace",
     letterSpacing: 6,
   },
@@ -208,7 +208,7 @@ const styles = StyleSheet.create({
   },
   activeBadge: { backgroundColor: "#dcfce7" },
   statusText: { fontSize: 12, fontWeight: "600", color: "#6b7280" },
-  activeText: { color: "#15803d" },
+  activeText: { color: "#6BA3D6" },
   playerCount: { fontSize: 13, color: "#6b7280" },
   actionRow: { flexDirection: "row", gap: 12, marginBottom: 16 },
   sectionTitle: {
@@ -235,7 +235,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  groupBtnActive: { backgroundColor: "#15803d", borderColor: "#15803d" },
+  groupBtnActive: { backgroundColor: "#6BA3D6", borderColor: "#6BA3D6" },
   groupBtnText: { fontSize: 12, fontWeight: "600", color: "#6b7280" },
   groupBtnTextActive: { color: "#ffffff" },
 });

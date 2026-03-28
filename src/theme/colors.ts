@@ -1,8 +1,13 @@
 export const colors = {
   // Primary
-  primary: "#15803d",       // green-700
-  primaryLight: "#16a34a",  // green-600
-  primaryDark: "#166534",   // green-800
+  primary: "#6BA3D6",        // pastel blue
+  primaryLight: "#89B8E3",   // pastel blue light
+  primaryDark: "#4A7FB5",    // pastel blue dark
+
+  // Accent
+  accent: "#F4A261",         // pastel orange
+  accentLight: "#F7BD8A",    // pastel orange light
+  accentDark: "#E08A3E",     // pastel orange dark
 
   // Background
   background: "#ffffff",
@@ -23,9 +28,9 @@ export const colors = {
 
   // Pill active colors
   emerald: "#059669",       // emerald-600
-  blue: "#2563eb",          // blue-600
+  blue: "#6BA3D6",          // matches primary
   violet: "#7c3aed",        // violet-600
-  amber: "#d97706",         // amber-600
+  amber: "#F4A261",         // matches accent
   slate: "#475569",         // slate-600
 
   // Semantic

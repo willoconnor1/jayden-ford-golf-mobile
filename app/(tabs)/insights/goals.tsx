@@ -92,7 +92,7 @@ function GoalCard({ goal }: { goal: Goal }) {
         </View>
         <ProgressBar
           value={progress}
-          color={goal.isCompleted ? "#16a34a" : "#15803d"}
+          color={goal.isCompleted ? "#16a34a" : "#6BA3D6"}
         />
         <Text style={styles.progressPct}>{progress.toFixed(0)}% complete</Text>
       </View>
@@ -291,7 +291,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     gap: 6,
-    backgroundColor: "#15803d",
+    backgroundColor: "#6BA3D6",
     paddingVertical: 12,
     borderRadius: 10,
   },
@@ -330,7 +330,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#e5e7eb",
   },
-  pillActive: { backgroundColor: "#15803d", borderColor: "#15803d" },
+  pillActive: { backgroundColor: "#6BA3D6", borderColor: "#6BA3D6" },
   pillText: { fontSize: 12, fontWeight: "500", color: "#6b7280" },
   pillTextActive: { color: "#ffffff" },
   // Modal
@@ -358,7 +358,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#f9fafb",
   },
   createBtn: {
-    backgroundColor: "#15803d",
+    backgroundColor: "#6BA3D6",
     paddingVertical: 14,
     borderRadius: 10,
     alignItems: "center",

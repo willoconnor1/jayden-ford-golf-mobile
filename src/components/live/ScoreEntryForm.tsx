@@ -203,9 +203,9 @@ const styles = StyleSheet.create({
     justifyContent: "center",
   },
   holeBtnComplete: { backgroundColor: "#dcfce7", borderColor: "#86efac" },
-  holeBtnCurrent: { backgroundColor: "#15803d", borderColor: "#15803d" },
+  holeBtnCurrent: { backgroundColor: "#6BA3D6", borderColor: "#6BA3D6" },
   holeBtnText: { fontSize: 12, fontWeight: "600", color: "#9ca3af" },
-  holeBtnTextComplete: { color: "#15803d" },
+  holeBtnTextComplete: { color: "#6BA3D6" },
   holeBtnTextCurrent: { color: "#ffffff" },
   scoresCard: { padding: 16 },
 });

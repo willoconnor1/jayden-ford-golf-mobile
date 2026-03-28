@@ -246,7 +246,7 @@ const styles = StyleSheet.create({
   },
   clubItemActive: { backgroundColor: "rgba(21,128,61,0.08)" },
   clubItemText: { fontSize: 15, color: "#374151" },
-  clubItemTextActive: { color: "#15803d", fontWeight: "600" },
+  clubItemTextActive: { color: "#6BA3D6", fontWeight: "600" },
   navRow: { flexDirection: "row", gap: 10, paddingTop: 8 },
   flex1: { flex: 1 },
 });

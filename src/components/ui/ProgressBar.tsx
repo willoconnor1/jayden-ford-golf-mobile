@@ -10,7 +10,7 @@ interface ProgressBarProps {
 
 export function ProgressBar({
   value,
-  color = "#15803d",
+  color = "#6BA3D6",
   trackColor = "#e5e7eb",
   height = 6,
   style,

@@ -168,7 +168,7 @@ export function HoleEntryCard({ hole, onChange }: HoleEntryCardProps) {
             <Switch
               value={hole.upAndDownAttempt}
               onValueChange={(v) => update({ upAndDownAttempt: v, upAndDownConverted: false })}
-              trackColor={{ true: "#15803d", false: "#d1d5db" }}
+              trackColor={{ true: "#6BA3D6", false: "#d1d5db" }}
             />
           </View>
           {hole.upAndDownAttempt && (
@@ -177,7 +177,7 @@ export function HoleEntryCard({ hole, onChange }: HoleEntryCardProps) {
               <Switch
                 value={hole.upAndDownConverted}
                 onValueChange={(v) => update({ upAndDownConverted: v })}
-                trackColor={{ true: "#15803d", false: "#d1d5db" }}
+                trackColor={{ true: "#6BA3D6", false: "#d1d5db" }}
               />
             </View>
           )}
@@ -187,7 +187,7 @@ export function HoleEntryCard({ hole, onChange }: HoleEntryCardProps) {
             <Switch
               value={hole.sandSaveAttempt}
               onValueChange={(v) => update({ sandSaveAttempt: v, sandSaveConverted: false })}
-              trackColor={{ true: "#15803d", false: "#d1d5db" }}
+              trackColor={{ true: "#6BA3D6", false: "#d1d5db" }}
             />
           </View>
           {hole.sandSaveAttempt && (
@@ -196,7 +196,7 @@ export function HoleEntryCard({ hole, onChange }: HoleEntryCardProps) {
               <Switch
                 value={hole.sandSaveConverted}
                 onValueChange={(v) => update({ sandSaveConverted: v })}
-                trackColor={{ true: "#15803d", false: "#d1d5db" }}
+                trackColor={{ true: "#6BA3D6", false: "#d1d5db" }}
               />
             </View>
           )}
@@ -211,7 +211,7 @@ const styles = StyleSheet.create({
   header: { flexDirection: "row", justifyContent: "space-between", alignItems: "center" },
   headerLeft: { flexDirection: "row", alignItems: "center", gap: 8 },
   holeBadge: {
-    width: 28, height: 28, borderRadius: 14, backgroundColor: "#15803d",
+    width: 28, height: 28, borderRadius: 14, backgroundColor: "#6BA3D6",
     alignItems: "center", justifyContent: "center",
   },
   holeBadgeText: { color: "#fff", fontSize: 13, fontWeight: "700" },

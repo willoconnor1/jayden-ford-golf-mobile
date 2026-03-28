@@ -13,7 +13,7 @@ export default function PlayerScorecardScreen() {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#15803d" />
+        <ActivityIndicator size="large" color="#6BA3D6" />
       </View>
     );
   }

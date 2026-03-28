@@ -125,7 +125,7 @@ export default function PracticeScreen() {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
         <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>🏋️</Text>
+          <Text style={styles.emptyIcon}>—</Text>
           <Text style={styles.emptyTitle}>Need Round Data First</Text>
           <Text style={styles.emptyText}>
             Log a few rounds so we can analyze your game and create a
@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     gap: 6,
-    backgroundColor: "#15803d",
+    backgroundColor: "#6BA3D6",
     paddingHorizontal: 20,
     paddingVertical: 12,
     borderRadius: 10,

@@ -74,7 +74,7 @@ export function DriverMissInput({ missX, onChange }: DriverMissInputProps) {
             <SvgText x={8} y={14} fontSize={10} fill="#9ca3af">L</SvgText>
             <SvgText x={SVG_WIDTH - 14} y={14} fontSize={10} fill="#9ca3af">R</SvgText>
             {/* Dot */}
-            <AnimatedCircle animatedProps={animatedProps} cy={CENTER_Y} r={10} fill="#15803d" />
+            <AnimatedCircle animatedProps={animatedProps} cy={CENTER_Y} r={10} fill="#6BA3D6" />
           </Svg>
         </View>
       </GestureDetector>

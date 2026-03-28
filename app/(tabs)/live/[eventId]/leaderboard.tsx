@@ -10,7 +10,7 @@ export default function LeaderboardScreen() {
   if (isLoading) {
     return (
       <View style={styles.center}>
-        <ActivityIndicator size="large" color="#15803d" />
+        <ActivityIndicator size="large" color="#6BA3D6" />
       </View>
     );
   }
@@ -74,5 +74,5 @@ const styles = StyleSheet.create({
   },
   liveBadge: { backgroundColor: "#dcfce7" },
   badgeText: { fontSize: 11, fontWeight: "600", color: "#6b7280" },
-  liveBadgeText: { color: "#15803d" },
+  liveBadgeText: { color: "#6BA3D6" },
 });
