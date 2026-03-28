@@ -77,7 +77,7 @@ export function PuttMissInput({ missX, missY, onChange }: PuttMissInputProps) {
         <View>
           <Svg width={SIZE} height={SIZE}>
             {/* Background */}
-            <Circle cx={CENTER} cy={CENTER} r={CENTER - 2} fill="#f0fdf4" stroke="#d1d5db" strokeWidth={1} />
+            <Circle cx={CENTER} cy={CENTER} r={CENTER - 2} fill="rgba(74, 222, 128, 0.15)" stroke="#d1d5db" strokeWidth={1} />
             {/* Rings */}
             {rings.map((r, i) => (
               <Circle key={i} cx={CENTER} cy={CENTER} r={r} fill="none" stroke="#d1d5db" strokeWidth={0.5} />
@@ -88,12 +88,14 @@ export function PuttMissInput({ missX, missY, onChange }: PuttMissInputProps) {
             {/* Cup */}
             <Circle cx={CENTER} cy={CENTER} r={CUP_R} fill="#111827" />
             <Circle cx={CENTER} cy={CENTER} r={CUP_R - 1.5} fill="#374151" />
-            {/* Dot */}
+            {/* Golf ball */}
             <AnimatedCircle
               cx={CENTER + missX * pxPerFoot}
               cy={CENTER - missY * pxPerFoot}
               r={8}
-              fill="#ef4444"
+              fill="white"
+              stroke="#b0b0b0"
+              strokeWidth={1}
             />
           </Svg>
         </View>

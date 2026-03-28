@@ -107,7 +107,7 @@ export function ShotMissInput({ missX, missY, onChange }: ShotMissInputProps) {
         <View>
           <Svg width={SIZE} height={SIZE}>
             {/* Background */}
-            <Circle cx={CENTER} cy={CENTER} r={CENTER - 2} fill="#f9fafb" stroke="#e5e7eb" strokeWidth={1} />
+            <Circle cx={CENTER} cy={CENTER} r={CENTER - 2} fill="rgba(74, 222, 128, 0.15)" stroke="#e5e7eb" strokeWidth={1} />
             {/* Concentric rings */}
             {rings.map((r, i) => (
               <Circle key={i} cx={CENTER} cy={CENTER} r={r} fill="none" stroke="#e5e7eb" strokeWidth={0.5} />
@@ -120,13 +120,15 @@ export function ShotMissInput({ missX, missY, onChange }: ShotMissInputProps) {
             <SvgText x={CENTER - 6} y={SIZE - 6} fontSize={10} fill="#9ca3af">Short</SvgText>
             <SvgText x={6} y={CENTER + 4} fontSize={10} fill="#9ca3af">L</SvgText>
             <SvgText x={SIZE - 14} y={CENTER + 4} fontSize={10} fill="#9ca3af">R</SvgText>
-            {/* Dot */}
+            {/* Golf ball */}
             <AnimatedCircle
               animatedProps={{ ...animatedCx, ...animatedCy }}
               cx={CENTER + displayX * pxPerUnit}
               cy={CENTER - displayY * pxPerUnit}
               r={10}
-              fill="rgba(74, 222, 128, 0.5)"
+              fill="white"
+              stroke="#b0b0b0"
+              strokeWidth={1}
             />
           </Svg>
         </View>
