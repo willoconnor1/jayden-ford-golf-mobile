@@ -79,53 +79,44 @@ export function VoiceShotFlowWrapper({
   // ── Auto-populate when AI returns parsed data ──
   useEffect(() => {
     if (!voice.parsedData) return;
-    const data = voice.parsedData;
+    // Cast to any for flexible field access from AI response
+    const d = voice.parsedData as Record<string, any>; // eslint-disable-line @typescript-eslint/no-explicit-any
 
     if (phase === "shot") {
       setShots((prev) => {
         const current = prev[currentShotIndex];
-        const updated: ShotData = {
-          ...current,
-          ...(data.club && { club: data.club as ShotData["club"] }),
-          ...(data.result && { result: data.result as ShotData["result"] }),
-          ...(data.lie && { lie: data.lie as ShotData["lie"] }),
-          ...(data.intent && { intent: data.intent as ShotData["intent"] }),
-          ...(data.missX !== undefined && { missX: data.missX as number }),
-          ...(data.missY !== undefined && { missY: data.missY as number }),
-          ...(data.direction && { direction: data.direction as ShotData["direction"] }),
-          ...(data.distanceRemaining !== undefined && {
-            distanceRemaining: data.distanceRemaining as number,
-          }),
-          ...(data.targetDistance !== undefined && {
-            targetDistance: data.targetDistance as number,
-          }),
-          ...(data.penaltyDrop !== undefined && {
-            penaltyDrop: data.penaltyDrop as boolean,
-          }),
-        };
+        const patch: Partial<ShotData> = {};
+        if (d.club) patch.club = d.club;
+        if (d.result) patch.result = d.result;
+        if (d.lie) patch.lie = d.lie;
+        if (d.intent) patch.intent = d.intent;
+        if (d.missX !== undefined) patch.missX = d.missX;
+        if (d.missY !== undefined) patch.missY = d.missY;
+        if (d.direction) patch.direction = d.direction;
+        if (d.distanceRemaining !== undefined) patch.distanceRemaining = d.distanceRemaining;
+        if (d.targetDistance !== undefined) patch.targetDistance = d.targetDistance;
+        if (d.penaltyDrop !== undefined) patch.penaltyDrop = d.penaltyDrop;
         const next = [...prev];
-        next[currentShotIndex] = updated;
+        next[currentShotIndex] = { ...current, ...patch };
         return next;
       });
-      if (data.holeShape) {
-        setHoleShape(data.holeShape as HoleShape);
+      if (d.holeShape) {
+        setHoleShape(d.holeShape as HoleShape);
       }
     } else if (phase === "putt") {
       setPutts((prev) => {
         const current = prev[currentPuttIndex];
-        const updated: PuttData = {
-          ...current,
-          ...(data.distance !== undefined && { distance: data.distance as number }),
-          ...(data.puttBreak && { puttBreak: data.puttBreak as PuttData["puttBreak"] }),
-          ...(data.puttSlope && { puttSlope: data.puttSlope as PuttData["puttSlope"] }),
-          ...(data.made !== undefined && { made: data.made as boolean }),
-          ...(data.missDirection && { missDirection: data.missDirection as PuttData["missDirection"] }),
-          ...(data.speed && { speed: data.speed as PuttData["speed"] }),
-          ...(data.missX !== undefined && { missX: data.missX as number }),
-          ...(data.missY !== undefined && { missY: data.missY as number }),
-        };
+        const patch: Partial<PuttData> = {};
+        if (d.distance !== undefined) patch.distance = d.distance;
+        if (d.puttBreak) patch.puttBreak = d.puttBreak;
+        if (d.puttSlope) patch.puttSlope = d.puttSlope;
+        if (d.made !== undefined) patch.made = d.made;
+        if (d.missDirection) patch.missDirection = d.missDirection;
+        if (d.speed) patch.speed = d.speed;
+        if (d.missX !== undefined) patch.missX = d.missX;
+        if (d.missY !== undefined) patch.missY = d.missY;
         const next = [...prev];
-        next[currentPuttIndex] = updated;
+        next[currentPuttIndex] = { ...current, ...patch };
         return next;
       });
     }
