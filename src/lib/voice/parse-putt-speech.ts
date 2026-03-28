@@ -17,59 +17,90 @@ export interface ParsedPuttResult {
 
 /**
  * Parse a putt transcript into structured putt data.
+ * Flexible — works with natural phrasing, not just the template script.
  */
 export function parsePuttSpeech(transcript: string): ParsedPuttResult {
   const text = normalizeTranscript(transcript);
   const result: ParsedPuttResult = {};
 
-  // Distance: "From [10] feet"
-  const distMatch = text.match(/(?:from\s+)([\w\s]+?)\s*(?:feet|ft|foot)/);
-  if (distMatch) {
-    result.distance = parseSpokenNumber(distMatch[1].trim());
+  // Distance: "from [10] feet", "[10] foot putt", "[10] footer", or bare "[10] feet"
+  const distPatterns = [
+    /(?:from\s+)([\w\s]+?)\s*(?:feet|ft|foot)/i,
+    /([\w\s]+?)\s*(?:feet|ft|foot)\s*(?:putt|er\b)/i,
+    /(?:had\s+|have\s+|got\s+(?:a\s+)?)([\w\s]+?)\s*(?:feet|ft|foot)/i,
+  ];
+  for (const p of distPatterns) {
+    const m = text.match(p);
+    if (m) {
+      const dist = parseSpokenNumber(m[1].trim());
+      if (dist !== undefined && dist > 0) {
+        result.distance = dist;
+        break;
+      }
+    }
   }
 
-  // Break: "[left to right] break" or "break [left to right]"
-  const breakMatch = text.match(
-    /([\w\s-]+?)\s*break|break\s*([\w\s-]+?)(?:\s*,|\s*\.|\s+i\b)/
-  );
-  if (breakMatch) {
-    const breakText = (breakMatch[1] || breakMatch[2]).trim();
-    result.puttBreak = resolvePuttBreak(breakText);
+  // Break: "[left to right] break", "break [left to right]", "breaks [left/right]"
+  const breakPatterns = [
+    /([\w\s-]+?)\s*break/i,
+    /break\s*([\w\s-]+?)(?:\s*[,.]|\s+(?:i|and|it)\b|$)/i,
+    /breaks\s*(left|right)/i,
+  ];
+  for (const p of breakPatterns) {
+    const m = text.match(p);
+    if (m) {
+      const breakText = (m[1] || "").trim();
+      if (breakText) {
+        const resolved = resolvePuttBreak(breakText);
+        if (resolved) { result.puttBreak = resolved; break; }
+      }
+    }
   }
 
-  // Slope: "uphill" / "downhill" / "flat"
-  for (const slope of ["uphill", "downhill", "flat", "multiple"] as const) {
+  // Slope: "uphill" / "downhill" / "flat" / "up hill" / "down hill"
+  for (const slope of ["uphill", "up hill", "downhill", "down hill", "flat", "multiple"] as const) {
     if (text.includes(slope)) {
       result.puttSlope = resolvePuttSlope(slope);
       break;
     }
   }
 
-  // Made/missed: "I [made/missed] it"
-  if (/\bmade\b|\bsank\b|\bdrained\b|\bholed\b/.test(text)) {
+  // Made/missed: many variations
+  if (/\bmade\b|\bsank\b|\bdrained\b|\bholed\b|\bmake\b|\bsink\b|\bin the hole\b|\bin the cup\b/i.test(text)) {
     result.made = true;
-  } else if (/\bmissed\b|\bmiss\b/.test(text)) {
+  } else if (/\bmissed\b|\bmiss\b|\bdidn't make\b|\bdid not make\b/i.test(text)) {
     result.made = false;
   }
 
   // If missed, get direction and speed
   if (result.made === false) {
-    // Miss direction: "missed it [right]" / "[left]"
-    const missDirMatch = text.match(
-      /(?:missed (?:it )?)(left|right|good line|on line|pulled|pushed)/
-    );
-    if (missDirMatch) {
-      result.missDirection = resolvePuttMissDirection(missDirMatch[1].trim());
+    // Miss direction: "missed [it] [left/right]", "pulled", "pushed", etc.
+    const missDirPatterns = [
+      /(?:missed\s+(?:it\s+)?)(left|right)/i,
+      /(?:missed\s+(?:it\s+)?(?:to\s+the\s+)?)(left|right)/i,
+      /\b(pulled|pushed)\b/i,
+      /(?:missed\s+(?:it\s+)?)(good line|on line)/i,
+    ];
+    for (const p of missDirPatterns) {
+      const m = text.match(p);
+      if (m) {
+        const resolved = resolvePuttMissDirection(m[1].trim());
+        if (resolved) { result.missDirection = resolved; break; }
+      }
     }
 
-    // Speed: "short" / "too firm" / "good speed"
-    for (const speedPhrase of ["too firm", "too hard", "too fast", "blew it by", "good speed", "good pace", "right speed"]) {
+    // Speed: check phrases
+    for (const speedPhrase of [
+      "too firm", "too hard", "too fast", "blew it by", "blew by",
+      "good speed", "good pace", "right speed",
+      "came up short", "left it short", "not enough",
+    ]) {
       if (text.includes(speedPhrase)) {
         result.speed = resolvePuttSpeed(speedPhrase);
         break;
       }
     }
-    // Check "short" separately to avoid conflict with distance "short"
+    // Check bare "short" only after "missed"/"miss" to avoid conflict with distance
     if (!result.speed) {
       const afterMiss = text.split(/missed|miss/).pop() || "";
       if (/\bshort\b/.test(afterMiss)) {

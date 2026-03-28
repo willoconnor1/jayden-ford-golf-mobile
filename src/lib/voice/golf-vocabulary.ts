@@ -280,3 +280,64 @@ export function normalizeTranscript(transcript: string): string {
   }
   return result;
 }
+
+// ── Vocabulary scanning ──────────────────────────────────────
+
+function escapeRegex(str: string): string {
+  return str.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/** Scan text for an exact phrase match from a synonym map (longest phrases first). */
+function scanVocabulary<T extends string>(
+  text: string,
+  synonymMap: Record<string, T>,
+  minKeyLength = 2,
+): T | undefined {
+  const sorted = Object.entries(synonymMap)
+    .filter(([key]) => key.length >= minKeyLength)
+    .sort(([a], [b]) => b.length - a.length);
+  for (const [key, value] of sorted) {
+    const escaped = escapeRegex(key);
+    if (new RegExp(`(?:^|[\\s,])${escaped}(?:[\\s,.]|$)`, "i").test(text)) {
+      return value;
+    }
+  }
+  return undefined;
+}
+
+/** Scan full text for any known club name. Tries exact phrases, then fuzzy on words. */
+export function scanForClub(text: string): Club | undefined {
+  const exact = scanVocabulary(text, CLUB_SYNONYMS, 2);
+  if (exact) return exact;
+  // Fuzzy: try 2-word phrases, then single words (4+ chars to avoid false positives)
+  const words = text.split(/\s+/);
+  for (let i = 0; i < words.length - 1; i++) {
+    const phrase = words[i] + " " + words[i + 1];
+    if (phrase.length >= 5) {
+      const club = resolveClub(phrase);
+      if (club) return club;
+    }
+  }
+  for (const word of words) {
+    if (word.length >= 4) {
+      const club = resolveClub(word);
+      if (club) return club;
+    }
+  }
+  return undefined;
+}
+
+/** Scan full text for any known shot result (exact match, longest first). */
+export function scanForResult(text: string): ShotResult | undefined {
+  return scanVocabulary(text, RESULT_SYNONYMS, 3);
+}
+
+/** Scan full text for any known lie (exact match, longest first). */
+export function scanForLie(text: string): ShotLie | undefined {
+  return scanVocabulary(text, LIE_SYNONYMS, 3);
+}
+
+/** Scan full text for any known hole shape (exact match, longest first). */
+export function scanForHoleShape(text: string): HoleShape | undefined {
+  return scanVocabulary(text, HOLE_SHAPE_SYNONYMS, 4);
+}
