@@ -155,7 +155,7 @@ export function ShotStepCard({
       />
 
       {/* Miss Direction */}
-      {shot.result && shot.result !== "green" && shot.result !== "holed" && (
+      {shot.result && shot.result !== "fairway" && shot.result !== "green" && shot.result !== "holed" && (
         <PillSelector
           label="Miss Direction"
           options={SHOT_DIRECTIONS}
@@ -167,7 +167,7 @@ export function ShotStepCard({
       )}
 
       {/* Distance remaining */}
-      {shot.result && shot.result !== "green" && shot.result !== "holed" && (
+      {shot.result && shot.result !== "fairway" && shot.result !== "green" && shot.result !== "holed" && (
         <TextInput
           label="Distance Remaining (yds)"
           value={shot.distanceRemaining ? String(shot.distanceRemaining) : ""}
