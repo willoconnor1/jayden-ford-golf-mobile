@@ -239,11 +239,11 @@ function generateShotsForHole(
     }
 
     // Direction based on miss
-    let direction: ShotDirection | undefined;
-    if (missX < -10) direction = "left";
-    else if (missX > 10) direction = "right";
-    else if (missY < -10) direction = "short";
-    else if (missY > 10) direction = "long";
+    let direction: ShotDirection[] | undefined;
+    if (missX < -10) direction = ["left"];
+    else if (missX > 10) direction = ["right"];
+    else if (missY < -10) direction = ["short"];
+    else if (missY > 10) direction = ["long"];
 
     shots.push({
       club,
