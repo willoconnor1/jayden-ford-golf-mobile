@@ -17,7 +17,7 @@ const SVG_WIDTH = Math.min(SCREEN_W - 64, 280);
 const SVG_HEIGHT = 60;
 const CENTER_X = SVG_WIDTH / 2;
 const CENTER_Y = SVG_HEIGHT / 2;
-const SCALE = 100; // yards
+const SCALE = 50; // yards (±50 default)
 
 export function DriverMissInput({ missX, onChange }: DriverMissInputProps) {
   const [zoom, setZoom] = useState(1);
@@ -66,6 +66,8 @@ export function DriverMissInput({ missX, onChange }: DriverMissInputProps) {
       <GestureDetector gesture={composed}>
         <View>
           <Svg width={SVG_WIDTH} height={SVG_HEIGHT}>
+            {/* Green background */}
+            <Rect x={0} y={0} width={SVG_WIDTH} height={SVG_HEIGHT} rx={8} fill="rgba(74, 222, 128, 0.15)" />
             {/* Track */}
             <Rect x={4} y={CENTER_Y - 3} width={SVG_WIDTH - 8} height={6} rx={3} fill="#e5e7eb" />
             {/* Center line */}
@@ -73,8 +75,16 @@ export function DriverMissInput({ missX, onChange }: DriverMissInputProps) {
             {/* Labels */}
             <SvgText x={8} y={14} fontSize={10} fill="#9ca3af">L</SvgText>
             <SvgText x={SVG_WIDTH - 14} y={14} fontSize={10} fill="#9ca3af">R</SvgText>
-            {/* Dot */}
-            <AnimatedCircle animatedProps={animatedProps} cy={CENTER_Y} r={10} fill="#6BA3D6" />
+            {/* Golf ball */}
+            <AnimatedCircle animatedProps={animatedProps} cy={CENTER_Y} r={8} fill="white" stroke="#b0b0b0" strokeWidth={1} />
+            {/* Dimples */}
+            <Circle cx={CENTER_X + missX * pxPerYard - 2} cy={CENTER_Y - 3} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER_X + missX * pxPerYard + 2} cy={CENTER_Y - 3} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER_X + missX * pxPerYard} cy={CENTER_Y} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER_X + missX * pxPerYard - 3} cy={CENTER_Y + 1} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER_X + missX * pxPerYard + 3} cy={CENTER_Y + 1} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER_X + missX * pxPerYard - 1} cy={CENTER_Y + 3} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER_X + missX * pxPerYard + 1} cy={CENTER_Y + 3} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
           </Svg>
         </View>
       </GestureDetector>

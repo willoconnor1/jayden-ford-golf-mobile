@@ -18,11 +18,11 @@ interface ShotMissInputProps {
 const SCREEN_W = Dimensions.get("window").width;
 const SIZE = Math.min(SCREEN_W - 64, 280);
 const CENTER = SIZE / 2;
-const YARDS_SCALE = 100;
-const FEET_SCALE = 150;
+const YARDS_SCALE = 50;
+const FEET_SCALE = 75;
 
 export function ShotMissInput({ missX, missY, onChange }: ShotMissInputProps) {
-  const [zoom, setZoom] = useState(1);
+  const [zoom, setZoom] = useState(2);
   const [unit, setUnit] = useState<MissUnit>("yards");
 
   const isFeet = unit === "feet";
@@ -130,6 +130,14 @@ export function ShotMissInput({ missX, missY, onChange }: ShotMissInputProps) {
               stroke="#b0b0b0"
               strokeWidth={1}
             />
+            {/* Dimples */}
+            <Circle cx={CENTER + displayX * pxPerUnit - 3} cy={CENTER - displayY * pxPerUnit - 4} r={1.2} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + displayX * pxPerUnit + 3} cy={CENTER - displayY * pxPerUnit - 4} r={1.2} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + displayX * pxPerUnit} cy={CENTER - displayY * pxPerUnit} r={1.2} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + displayX * pxPerUnit - 4} cy={CENTER - displayY * pxPerUnit + 1} r={1.2} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + displayX * pxPerUnit + 4} cy={CENTER - displayY * pxPerUnit + 1} r={1.2} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + displayX * pxPerUnit - 1} cy={CENTER - displayY * pxPerUnit + 4} r={1.2} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + displayX * pxPerUnit + 1} cy={CENTER - displayY * pxPerUnit + 4} r={1.2} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
           </Svg>
         </View>
       </GestureDetector>

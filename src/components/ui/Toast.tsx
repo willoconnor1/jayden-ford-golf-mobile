@@ -17,7 +17,7 @@ export const toast = {
 };
 
 const typeColors = {
-  success: "#16a34a",
+  success: "#6BA3D6",
   error: "#dc2626",
   info: "#2563eb",
 };

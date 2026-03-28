@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-  holeBtnComplete: { backgroundColor: "#dcfce7", borderColor: "#86efac" },
+  holeBtnComplete: { backgroundColor: "#dbeafe", borderColor: "#93c5fd" },
   holeBtnCurrent: { backgroundColor: "#6BA3D6", borderColor: "#6BA3D6" },
   holeBtnText: { fontSize: 12, fontWeight: "600", color: "#9ca3af" },
   holeBtnTextComplete: { color: "#6BA3D6" },

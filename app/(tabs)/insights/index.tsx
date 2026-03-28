@@ -13,8 +13,8 @@ const SECTIONS = [
     title: "Strokes Gained",
     description: "See where you gain and lose strokes vs PGA Tour average",
     icon: "trending-up-outline" as const,
-    color: "#16a34a",
-    bgColor: "#f0fdf4",
+    color: "#6BA3D6",
+    bgColor: "#eff6ff",
   },
   {
     href: "/insights/goals" as const,
@@ -71,7 +71,7 @@ export default function InsightsHub() {
                 style={[
                   styles.summaryValue,
                   sgAverages
-                    ? { color: sgAverages.sgTotal >= 0 ? "#16a34a" : "#dc2626" }
+                    ? { color: sgAverages.sgTotal >= 0 ? "#6BA3D6" : "#dc2626" }
                     : undefined,
                 ]}
               >

@@ -23,12 +23,12 @@ const CATEGORY_LABELS: Record<string, string> = {
 const CATEGORY_COLORS: Record<string, { bg: string; text: string }> = {
   driving: { bg: "#dbeafe", text: "#1d4ed8" },
   approach: { bg: "#ffedd5", text: "#c2410c" },
-  shortGame: { bg: "#d1fae5", text: "#047857" },
+  shortGame: { bg: "#ccfbf1", text: "#0d9488" },
   putting: { bg: "#ede9fe", text: "#6d28d9" },
 };
 
 const DIFFICULTY_COLORS: Record<string, { bg: string; text: string }> = {
-  beginner: { bg: "#dcfce7", text: "#166534" },
+  beginner: { bg: "#dbeafe", text: "#1e40af" },
   intermediate: { bg: "#fef9c3", text: "#854d0e" },
   advanced: { bg: "#fee2e2", text: "#991b1b" },
 };
@@ -82,7 +82,7 @@ function FocusCard({ focus }: { focus: PracticeFocus }) {
         <Text
           style={[
             styles.focusSG,
-            { color: focus.sgValue >= 0 ? "#16a34a" : "#ef4444" },
+            { color: focus.sgValue >= 0 ? "#6BA3D6" : "#ef4444" },
           ]}
         >
           {focus.sgValue >= 0 ? "+" : ""}
@@ -125,7 +125,6 @@ export default function PracticeScreen() {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
         <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>—</Text>
           <Text style={styles.emptyTitle}>Need Round Data First</Text>
           <Text style={styles.emptyText}>
             Log a few rounds so we can analyze your game and create a

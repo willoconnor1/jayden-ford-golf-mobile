@@ -129,7 +129,6 @@ export default function DispersionScreen() {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
         <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>—</Text>
           <Text style={styles.emptyTitle}>No shot data yet</Text>
           <Text style={styles.emptyText}>
             When entering a round, expand the "More" section on each hole and

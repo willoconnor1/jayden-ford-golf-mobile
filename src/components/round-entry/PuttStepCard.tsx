@@ -3,6 +3,7 @@ import { PuttMissDirection, PuttSpeed, PuttBreak, PuttSlope } from "@/lib/types"
 import { Button } from "@/components/ui/Button";
 import { PillSelector } from "@/components/ui/PillSelector";
 import { TextInput } from "@/components/ui/TextInput";
+import { PuttMissInput } from "./PuttMissInput";
 import { PUTT_BREAKS, PUTT_SLOPES, PUTT_SPEEDS } from "@/lib/constants-clubs";
 import { hapticLight } from "@/lib/platform";
 
@@ -66,7 +67,7 @@ export function PuttStepCard({
         value={putt.puttBreak}
         onChange={(v) => update({ puttBreak: v as PuttBreak | undefined })}
         columns={4}
-        activeColor="#059669"
+        activeColor="#6BA3D6"
         allowDeselect
       />
 
@@ -127,6 +128,13 @@ export function PuttStepCard({
             activeColor="#2563eb"
             allowDeselect
           />
+          {isDetailed && (
+            <PuttMissInput
+              missX={putt.missX}
+              missY={putt.missY}
+              onChange={(missX, missY) => update({ missX, missY })}
+            />
+          )}
         </>
       )}
 
@@ -155,7 +163,7 @@ const styles = StyleSheet.create({
     flex: 1, paddingVertical: 14, borderRadius: 10, borderWidth: 2,
     borderColor: "#d1d5db", alignItems: "center",
   },
-  madeActive: { backgroundColor: "#16a34a", borderColor: "#16a34a" },
+  madeActive: { backgroundColor: "#6BA3D6", borderColor: "#6BA3D6" },
   madeText: { fontSize: 14, fontWeight: "600", color: "#6b7280" },
   madeTextActive: { color: "#ffffff" },
   missedButton: {

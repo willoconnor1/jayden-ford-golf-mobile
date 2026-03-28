@@ -55,13 +55,13 @@ export function HoleSummaryCard({ hole, isLastHole, onNext, onBack }: HoleSummar
           <StatBox
             label="Fairway"
             value={hole.fairwayHit === "yes" ? "Hit" : "Missed"}
-            color={hole.fairwayHit === "yes" ? "#16a34a" : "#ef4444"}
+            color={hole.fairwayHit === "yes" ? "#6BA3D6" : "#ef4444"}
           />
         )}
         <StatBox
           label="GIR"
           value={hole.greenInRegulation ? "Yes" : "No"}
-          color={hole.greenInRegulation ? "#16a34a" : "#ef4444"}
+          color={hole.greenInRegulation ? "#6BA3D6" : "#ef4444"}
         />
         <StatBox label="Putts" value={String(hole.putts)} />
         {hole.penaltyStrokes > 0 && (
@@ -71,7 +71,7 @@ export function HoleSummaryCard({ hole, isLastHole, onNext, onBack }: HoleSummar
           <StatBox
             label="Up & Down"
             value={hole.upAndDownConverted ? "Yes" : "No"}
-            color={hole.upAndDownConverted ? "#16a34a" : "#ef4444"}
+            color={hole.upAndDownConverted ? "#6BA3D6" : "#ef4444"}
           />
         )}
       </View>

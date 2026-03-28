@@ -206,7 +206,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     backgroundColor: "#f3f4f6",
   },
-  activeBadge: { backgroundColor: "#dcfce7" },
+  activeBadge: { backgroundColor: "#dbeafe" },
   statusText: { fontSize: 12, fontWeight: "600", color: "#6b7280" },
   activeText: { color: "#6BA3D6" },
   playerCount: { fontSize: 13, color: "#6b7280" },

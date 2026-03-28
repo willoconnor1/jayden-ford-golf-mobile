@@ -34,7 +34,7 @@ function SGBarChart({ data }: { data: { label: string; value: number }[] }) {
         const barW = (Math.abs(item.value) / maxAbs) * (chartArea / 2 - 10);
         const isPositive = item.value >= 0;
         const barX = isPositive ? centerX : centerX - barW;
-        const fill = isPositive ? "#22c55e" : "#ef4444";
+        const fill = isPositive ? "#6BA3D6" : "#ef4444";
 
         return (
           <View key={item.label}>
@@ -73,7 +73,6 @@ export default function StrokesGainedScreen() {
     return (
       <SafeAreaView style={styles.container} edges={["bottom"]}>
         <View style={styles.empty}>
-          <Text style={styles.emptyIcon}>—</Text>
           <Text style={styles.emptyTitle}>No Rounds Yet</Text>
           <Text style={styles.emptyText}>
             Log at least one round to see your strokes gained analysis.
@@ -115,7 +114,7 @@ export default function StrokesGainedScreen() {
                   <Text
                     style={[
                       styles.sgCardValue,
-                      { color: value >= 0 ? "#16a34a" : "#ef4444" },
+                      { color: value >= 0 ? "#6BA3D6" : "#ef4444" },
                     ]}
                   >
                     {value >= 0 ? "+" : ""}
@@ -135,7 +134,7 @@ export default function StrokesGainedScreen() {
               <SGBarChart data={barData} />
             </View>
             <Text style={styles.chartFooter}>
-              Green = gaining vs PGA Tour, Red = losing
+              Blue = gaining vs PGA Tour, Red = losing
             </Text>
           </Card>
         )}

@@ -27,14 +27,14 @@ export const colors = {
   doublePlus: "#1d4ed8",    // blue-700
 
   // Pill active colors
-  emerald: "#059669",       // emerald-600
+  emerald: "#0d9488",       // emerald-600
   blue: "#6BA3D6",          // matches primary
   violet: "#7c3aed",        // violet-600
   amber: "#F4A261",         // matches accent
   slate: "#475569",         // slate-600
 
   // Semantic
-  success: "#16a34a",       // green-600
+  success: "#6BA3D6",       // green-600
   danger: "#dc2626",        // red-600
   warning: "#d97706",       // amber-600
   info: "#2563eb",          // blue-600

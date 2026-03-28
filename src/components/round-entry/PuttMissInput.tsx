@@ -97,6 +97,14 @@ export function PuttMissInput({ missX, missY, onChange }: PuttMissInputProps) {
               stroke="#b0b0b0"
               strokeWidth={1}
             />
+            {/* Dimples */}
+            <Circle cx={CENTER + missX * pxPerFoot - 2} cy={CENTER - missY * pxPerFoot - 3} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + missX * pxPerFoot + 2} cy={CENTER - missY * pxPerFoot - 3} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + missX * pxPerFoot} cy={CENTER - missY * pxPerFoot} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + missX * pxPerFoot - 3} cy={CENTER - missY * pxPerFoot + 1} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + missX * pxPerFoot + 3} cy={CENTER - missY * pxPerFoot + 1} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + missX * pxPerFoot - 1} cy={CENTER - missY * pxPerFoot + 3} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
+            <Circle cx={CENTER + missX * pxPerFoot + 1} cy={CENTER - missY * pxPerFoot + 3} r={1} fill="none" stroke="#d4d4d4" strokeWidth={0.5} />
           </Svg>
         </View>
       </GestureDetector>

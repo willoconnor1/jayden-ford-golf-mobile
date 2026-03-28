@@ -4,6 +4,8 @@ import { ShotData, Club, ShotResult, ShotDirection, ShotIntent, HoleShape } from
 import { Button } from "@/components/ui/Button";
 import { PillSelector } from "@/components/ui/PillSelector";
 import { TextInput } from "@/components/ui/TextInput";
+import { ShotMissInput } from "./ShotMissInput";
+import { DriverMissInput } from "./DriverMissInput";
 import {
   CLUBS,
   HOLE_SHAPES,
@@ -151,7 +153,7 @@ export function ShotStepCard({
         value={shot.result}
         onChange={(v) => update({ result: v as ShotResult })}
         columns={3}
-        activeColor="#059669"
+        activeColor="#6BA3D6"
       />
 
       {/* Miss Direction */}
@@ -167,7 +169,7 @@ export function ShotStepCard({
       )}
 
       {/* Distance remaining */}
-      {shot.result && shot.result !== "fairway" && shot.result !== "green" && shot.result !== "holed" && (
+      {shot.result && shot.result !== "green" && shot.result !== "holed" && (
         <TextInput
           label="Distance Remaining (yds)"
           value={shot.distanceRemaining ? String(shot.distanceRemaining) : ""}
@@ -175,6 +177,22 @@ export function ShotStepCard({
           keyboardType="number-pad"
           placeholder="150"
         />
+      )}
+
+      {/* Visual miss tracker — detailed mode only */}
+      {isDetailed && (
+        isPar45Tee ? (
+          <DriverMissInput
+            missX={shot.missX}
+            onChange={(missX) => update({ missX, missY: 0 })}
+          />
+        ) : (
+          <ShotMissInput
+            missX={shot.missX}
+            missY={shot.missY}
+            onChange={(missX, missY) => update({ missX, missY })}
+          />
+        )
       )}
 
       {/* Navigation */}
@@ -203,7 +221,7 @@ const styles = StyleSheet.create({
   container: { gap: 16 },
   label: { fontSize: 12, fontWeight: "500", color: "#6b7280" },
   lieText: { textTransform: "capitalize" },
-  distanceText: { fontWeight: "600", color: "#059669" },
+  distanceText: { fontWeight: "600", color: "#6BA3D6" },
   fieldLabel: { fontSize: 12, fontWeight: "500", color: "#6b7280", marginBottom: 6 },
   clubButton: {
     flexDirection: "row",
@@ -244,7 +262,7 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#f3f4f6",
   },
-  clubItemActive: { backgroundColor: "rgba(21,128,61,0.08)" },
+  clubItemActive: { backgroundColor: "rgba(107,163,214,0.08)" },
   clubItemText: { fontSize: 15, color: "#374151" },
   clubItemTextActive: { color: "#6BA3D6", fontWeight: "600" },
   navRow: { flexDirection: "row", gap: 10, paddingTop: 8 },

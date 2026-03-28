@@ -72,7 +72,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     backgroundColor: "#f3f4f6",
   },
-  liveBadge: { backgroundColor: "#dcfce7" },
+  liveBadge: { backgroundColor: "#dbeafe" },
   badgeText: { fontSize: 11, fontWeight: "600", color: "#6b7280" },
   liveBadgeText: { color: "#6BA3D6" },
 });

@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
   },
   cardActive: {
     borderColor: "#6BA3D6",
-    backgroundColor: "rgba(21,128,61,0.05)",
+    backgroundColor: "rgba(107,163,214,0.05)",
   },
   title: { fontSize: 14, fontWeight: "700", color: "#374151" },
   titleActive: { color: "#6BA3D6" },

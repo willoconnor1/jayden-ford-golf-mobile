@@ -1,20 +1,63 @@
 import { useState } from "react";
 import { View, Text, Pressable, StyleSheet, Switch } from "react-native";
-import { HoleData, PuttMissDirection, PuttSpeed, PuttBreak } from "@/lib/types";
+import { HoleData, ShotData, ShotResult, PuttMissDirection, PuttSpeed, PuttBreak, PuttSlope } from "@/lib/types";
 import { Card } from "@/components/ui/Card";
 import { NumberStepper } from "@/components/ui/NumberStepper";
 import { PillSelector } from "@/components/ui/PillSelector";
 import { TextInput } from "@/components/ui/TextInput";
+import { PuttMissInput } from "./PuttMissInput";
+import { ShotEntryCard } from "./ShotEntryCard";
 import { holeScoreColor } from "@/lib/utils";
 import { hapticLight } from "@/lib/platform";
+
+const MISS_DIRECTIONS: { value: PuttMissDirection; label: string }[] = [
+  { value: "left", label: "Left" },
+  { value: "good-line", label: "Good Line" },
+  { value: "right", label: "Right" },
+];
+
+const PUTT_SPEEDS_INLINE: { value: PuttSpeed; label: string }[] = [
+  { value: "short", label: "Short" },
+  { value: "too-firm", label: "Too Firm" },
+  { value: "good-speed", label: "Good Speed" },
+];
+
+const PUTT_BREAKS_INLINE: { value: PuttBreak; label: string }[] = [
+  { value: "straight", label: "Straight" },
+  { value: "left-to-right", label: "L-to-R" },
+  { value: "right-to-left", label: "R-to-L" },
+  { value: "multiple", label: "Multiple" },
+];
 
 interface HoleEntryCardProps {
   hole: HoleData;
   onChange: (hole: HoleData) => void;
 }
 
+function defaultShot(isFirst = false, par = 4): ShotData {
+  if (isFirst && par !== 3) {
+    return { club: "driver", targetDistance: 250, lie: "tee", missX: 0, missY: 0 };
+  }
+  return { club: "7-iron", targetDistance: 150, lie: "fairway", missX: 0, missY: 0 };
+}
+
+function resultToLie(result: ShotResult, currentLie: ShotData["lie"]): { lie: ShotData["lie"] } {
+  switch (result) {
+    case "fairway": return { lie: "fairway" };
+    case "rough": return { lie: "rough" };
+    case "penalty-area": return { lie: "penalty-area" };
+    case "tree-trouble": return { lie: "abnormal" };
+    case "abnormal": return { lie: "abnormal" };
+    case "out-of-bounds": return { lie: currentLie };
+    case "sand": return { lie: "sand" };
+    case "green": return { lie: "fairway" };
+    case "holed": return { lie: "fairway" };
+  }
+}
+
 export function HoleEntryCard({ hole, onChange }: HoleEntryCardProps) {
   const [expanded, setExpanded] = useState(false);
+  const [showShots, setShowShots] = useState((hole.shots?.length ?? 0) > 0);
   const scoreToPar = hole.score - hole.par;
   const scoreColor = holeScoreColor(scoreToPar);
 
@@ -62,7 +105,7 @@ export function HoleEntryCard({ hole, onChange }: HoleEntryCardProps) {
           {(["yes", "no", "na"] as const).map((val) => {
             const isActive = hole.fairwayHit === val;
             const bg = isActive
-              ? val === "yes" ? "#16a34a" : val === "no" ? "#ef4444" : "#e5e7eb"
+              ? val === "yes" ? "#6BA3D6" : val === "no" ? "#ef4444" : "#e5e7eb"
               : "#ffffff";
             const textColor = isActive && val !== "na" ? "#ffffff" : isActive ? "#374151" : "#6b7280";
             return (
@@ -86,7 +129,7 @@ export function HoleEntryCard({ hole, onChange }: HoleEntryCardProps) {
         <View style={styles.pillRow}>
           {[true, false].map((val) => {
             const isActive = hole.greenInRegulation === val;
-            const bg = isActive ? (val ? "#16a34a" : "#ef4444") : "#ffffff";
+            const bg = isActive ? (val ? "#6BA3D6" : "#ef4444") : "#ffffff";
             return (
               <Pressable
                 key={String(val)}
@@ -122,29 +165,78 @@ export function HoleEntryCard({ hole, onChange }: HoleEntryCardProps) {
         max={10}
       />
 
-      {/* Putt distances */}
+      {/* Putt distances + miss details */}
       {hole.putts > 0 && (
         <View style={styles.puttDistances}>
           {Array.from({ length: hole.putts }).map((_, i) => {
             const ordinal = i === 0 ? "1st" : i === 1 ? "2nd" : i === 2 ? "3rd" : `${i + 1}th`;
             const isMiss = i < hole.putts - 1;
+            const miss = (hole.puttMisses || [])[i];
+
+            const updateMissField = (fields: Partial<NonNullable<HoleData["puttMisses"]>[number]>) => {
+              const newMisses = [...(hole.puttMisses || [])];
+              while (newMisses.length <= i) newMisses.push({ missX: 0, missY: 0 });
+              newMisses[i] = { ...newMisses[i], ...fields };
+              update({ puttMisses: newMisses });
+            };
+
             return (
-              <View key={i} style={styles.puttRow}>
-                <Text style={styles.puttLabel}>{ordinal} putt</Text>
-                <TextInput
-                  value={String((hole.puttDistances || [])[i] || "")}
-                  onChangeText={(t) => {
-                    const newDists = [...(hole.puttDistances || [])];
-                    while (newDists.length <= i) newDists.push(0);
-                    newDists[i] = parseInt(t) || 0;
-                    update({ puttDistances: newDists });
-                  }}
-                  keyboardType="number-pad"
-                  placeholder="ft"
-                  style={{ width: 60, height: 32, fontSize: 13 }}
-                />
-                {isMiss && <Text style={styles.missLabel}>miss</Text>}
-                {!isMiss && hole.putts > 1 && <Text style={styles.madeLabel}>made</Text>}
+              <View key={i} style={styles.puttSection}>
+                <View style={styles.puttRow}>
+                  <Text style={styles.puttLabel}>{ordinal} putt</Text>
+                  <TextInput
+                    value={String((hole.puttDistances || [])[i] || "")}
+                    onChangeText={(t) => {
+                      const newDists = [...(hole.puttDistances || [])];
+                      while (newDists.length <= i) newDists.push(0);
+                      newDists[i] = parseInt(t) || 0;
+                      update({ puttDistances: newDists });
+                    }}
+                    keyboardType="number-pad"
+                    placeholder="ft"
+                    style={{ width: 60, height: 32, fontSize: 13 }}
+                  />
+                  {isMiss && <Text style={styles.missLabel}>miss</Text>}
+                  {!isMiss && hole.putts > 1 && <Text style={styles.madeLabel}>made</Text>}
+                </View>
+
+                {/* Miss details for missed putts */}
+                {isMiss && (
+                  <View style={styles.missDetails}>
+                    <PuttMissInput
+                      missX={miss?.missX ?? 0}
+                      missY={miss?.missY ?? 0}
+                      onChange={(missX, missY) => updateMissField({ missX, missY })}
+                    />
+                    <PillSelector
+                      label="Miss Direction"
+                      options={MISS_DIRECTIONS}
+                      value={miss?.missDirection}
+                      onChange={(v) => updateMissField({ missDirection: miss?.missDirection === v ? undefined : v as PuttMissDirection })}
+                      columns={3}
+                      activeColor="#d97706"
+                      allowDeselect
+                    />
+                    <PillSelector
+                      label="Speed"
+                      options={PUTT_SPEEDS_INLINE}
+                      value={miss?.speed}
+                      onChange={(v) => updateMissField({ speed: miss?.speed === v ? undefined : v as PuttSpeed })}
+                      columns={3}
+                      activeColor="#2563eb"
+                      allowDeselect
+                    />
+                    <PillSelector
+                      label="Break"
+                      options={PUTT_BREAKS_INLINE}
+                      value={miss?.puttBreak}
+                      onChange={(v) => updateMissField({ puttBreak: miss?.puttBreak === v ? undefined : v as PuttBreak })}
+                      columns={4}
+                      activeColor="#6BA3D6"
+                      allowDeselect
+                    />
+                  </View>
+                )}
               </View>
             );
           })}
@@ -154,7 +246,7 @@ export function HoleEntryCard({ hole, onChange }: HoleEntryCardProps) {
       {/* Expand toggle */}
       <Pressable onPress={() => setExpanded(!expanded)} style={styles.expandToggle}>
         <Text style={styles.expandText}>
-          {expanded ? "▲ Less" : "▼ More"} (penalties, up & down, sand)
+          {expanded ? "▲ Less" : "▼ More"} (penalties, up & down, sand, shots)
         </Text>
       </Pressable>
 
@@ -200,6 +292,53 @@ export function HoleEntryCard({ hole, onChange }: HoleEntryCardProps) {
               />
             </View>
           )}
+
+          {/* Shot tracking */}
+          <View style={styles.shotTrackingSection}>
+            <Pressable
+              onPress={() => {
+                hapticLight();
+                if (showShots) {
+                  update({ shots: undefined });
+                  setShowShots(false);
+                } else {
+                  const nonPuttShots = Math.max(0, hole.score - hole.putts);
+                  const newShots = Array.from({ length: nonPuttShots }, (_, i) =>
+                    defaultShot(i === 0, hole.par)
+                  );
+                  update({ shots: newShots });
+                  setShowShots(true);
+                }
+              }}
+            >
+              <Text style={styles.shotTrackingToggle}>
+                {showShots
+                  ? "✕ Remove shot tracking"
+                  : `◎ Track ${Math.max(0, hole.score - hole.putts)} shot${Math.max(0, hole.score - hole.putts) !== 1 ? "s" : ""}`}
+              </Text>
+            </Pressable>
+
+            {showShots && hole.shots && hole.shots.length > 0 && (
+              <View style={styles.shotsList}>
+                {hole.shots.map((shot, i) => (
+                  <ShotEntryCard
+                    key={i}
+                    shotIndex={i}
+                    shot={shot}
+                    onChange={(s) => {
+                      const newShots = [...(hole.shots || [])];
+                      newShots[i] = s;
+                      if (s.result && i + 1 < newShots.length) {
+                        const { lie } = resultToLie(s.result, s.lie);
+                        newShots[i + 1] = { ...newShots[i + 1], lie };
+                      }
+                      update({ shots: newShots });
+                    }}
+                  />
+                ))}
+              </View>
+            )}
+          </View>
         </View>
       )}
     </Card>
@@ -228,14 +367,19 @@ const styles = StyleSheet.create({
     borderWidth: 1, alignItems: "center",
   },
   smallPillText: { fontSize: 13, fontWeight: "500" },
-  puttDistances: { paddingLeft: 56, gap: 8 },
+  puttDistances: { paddingLeft: 56, gap: 12 },
+  puttSection: { gap: 8 },
   puttRow: { flexDirection: "row", alignItems: "center", gap: 8 },
+  missDetails: { gap: 12, paddingTop: 4 },
   puttLabel: { fontSize: 12, color: "#6b7280", width: 56 },
   missLabel: { fontSize: 12, color: "#d97706", fontWeight: "500" },
-  madeLabel: { fontSize: 12, color: "#16a34a", fontWeight: "500" },
+  madeLabel: { fontSize: 12, color: "#6BA3D6", fontWeight: "500" },
   expandToggle: { paddingVertical: 4 },
   expandText: { fontSize: 12, color: "#6b7280" },
   expandedSection: { borderTopWidth: 1, borderTopColor: "#e5e7eb", paddingTop: 12, gap: 12 },
   switchRow: { flexDirection: "row", alignItems: "center", justifyContent: "space-between" },
   switchLabel: { fontSize: 13, color: "#6b7280" },
+  shotTrackingSection: { borderTopWidth: 1, borderTopColor: "#e5e7eb", paddingTop: 12, gap: 8 },
+  shotTrackingToggle: { fontSize: 12, color: "#6b7280" },
+  shotsList: { gap: 8 },
 });

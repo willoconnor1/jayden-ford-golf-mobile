@@ -92,7 +92,7 @@ function GoalCard({ goal }: { goal: Goal }) {
         </View>
         <ProgressBar
           value={progress}
-          color={goal.isCompleted ? "#16a34a" : "#6BA3D6"}
+          color={goal.isCompleted ? "#6BA3D6" : "#6BA3D6"}
         />
         <Text style={styles.progressPct}>{progress.toFixed(0)}% complete</Text>
       </View>
@@ -214,7 +214,7 @@ export default function GoalsScreen() {
 
         {completedGoals.length > 0 && (
           <View style={styles.section}>
-            <Text style={[styles.sectionTitle, { color: "#16a34a" }]}>
+            <Text style={[styles.sectionTitle, { color: "#6BA3D6" }]}>
               Completed
             </Text>
             {completedGoals.map((g) => (
@@ -304,12 +304,12 @@ const styles = StyleSheet.create({
   sectionTitle: { fontSize: 16, fontWeight: "600", color: "#111827" },
   // Goal card
   goalCard: { padding: 14, gap: 12 },
-  goalCardCompleted: { borderColor: "rgba(22, 163, 74, 0.3)", backgroundColor: "rgba(240, 253, 244, 0.5)" },
+  goalCardCompleted: { borderColor: "rgba(107, 163, 214, 0.3)", backgroundColor: "rgba(230, 240, 250, 0.5)" },
   goalHeader: { flexDirection: "row", justifyContent: "space-between", gap: 8 },
   goalStat: { fontSize: 14, fontWeight: "600", color: "#111827" },
   goalTarget: { fontSize: 12, color: "#6b7280", marginTop: 2 },
   goalBadges: { flexDirection: "row", alignItems: "center", gap: 8 },
-  badgeDone: { backgroundColor: "#16a34a", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
+  badgeDone: { backgroundColor: "#6BA3D6", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   badgeDoneText: { fontSize: 11, fontWeight: "600", color: "#ffffff" },
   badgeOverdue: { backgroundColor: "#fef2f2", paddingHorizontal: 8, paddingVertical: 3, borderRadius: 6 },
   badgeOverdueText: { fontSize: 11, fontWeight: "600", color: "#dc2626" },
